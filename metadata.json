@@ -1,0 +1,6 @@
+{
+  "name": "Henry Fit",
+  "description": "Premium performance athletic apparel, lifting hardware, and interactive AI specialist recommendations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,102 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  category    String
+  price       Float
+  stock       Int
+  image       String
+  status      String   // 'Active' | 'Low Stock' | 'Out of Stock' | 'Draft'
+}
+
+model Category {
+  id           String @id @default(uuid())
+  name         String @unique
+  description  String
+  productCount Int    @default(0)
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  customerName  String
+  customerEmail String
+  date          String
+  total         Float
+  status        String      // 'Pending' | 'Completed' | 'Cancelled'
+  paymentMethod String
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id          String @id @default(uuid())
+  productId   String
+  productName String
+  quantity    Int
+  price       Float
+  orderId     String
+  order       Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Customer {
+  id         String @id @default(uuid())
+  name       String
+  email      String @unique
+  totalSpend Float  @default(0)
+  orderCount Int    @default(0)
+  joinDate   String
+  status     String // 'Active' | 'Suspended'
+}
+
+model Promotion {
+  id            String @id @default(uuid())
+  code          String @unique
+  discountType  String // 'Percentage' | 'Flat'
+  discountValue Float
+  status        String // 'Active' | 'Expired'
+  useCount      Int    @default(0)
+  startDate     String
+  endDate       String
+}
+
+model Staff {
+  id     String @id @default(uuid())
+  name   String
+  role   String // 'Admin' | 'Manager' | 'Trainer'
+  email  String @unique
+  status String // 'Active' | 'Inactive'
+  avatar String
+}
+
+// ===== Real Account System =====
+model Account {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String   // bcrypt hash
+  role      String   // 'Admin' | 'Staff'
+  name      String
+  email     String   @unique
+  status    String   @default("Active")
+  createdAt DateTime @default(now())
+}
+
+// ===== Member Registration (OTP) =====
+model MemberAccount {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String    // bcrypt hash
+  phone     String?
+  verified  Boolean   @default(false)
+  otp       String?
+  otpExpiry DateTime?
+  createdAt DateTime  @default(now())
+}

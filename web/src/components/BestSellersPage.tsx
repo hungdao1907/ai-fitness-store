@@ -3,6 +3,7 @@ import { SlidersHorizontal, Plus, ShoppingCart, Eye, ChevronDown, Check, Star, S
 import { Product, CartItem } from "../types";
 import { useProducts } from "../context/ProductContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useTheme } from "../context/ThemeContext";
 import { motion, AnimatePresence } from "motion/react";
 
 interface BestSellersPageProps {
@@ -15,6 +16,7 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
   const { products: PRODUCTS } = useProducts();
 
   const { language, t } = useLanguage();
+  const { isDark } = useTheme();
 
   // Filter & Sort States
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
@@ -149,7 +151,7 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
   ];
 
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className={`min-h-screen transition-colors ${isDark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'}`}>
       
       {/* 1. HERO HEADER SECTION */}
       <div className="relative h-[450px] md:h-[550px] flex items-center justify-center overflow-hidden border-b border-[#424656]/20">
@@ -175,7 +177,7 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="font-anton text-5xl sm:text-7xl md:text-8xl tracking-tight uppercase leading-none mb-6 text-white"
+            className={`font-anton text-5xl sm:text-7xl md:text-8xl tracking-tight uppercase leading-none mb-6 ${isDark ? 'text-white' : 'text-gray-50'}`}
           >
             {language === "vi" ? "BEST SELLERS" : "BEST SELLERS"}
           </motion.h1>
@@ -190,7 +192,7 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
 
       {/* 2. FILTER & SORT NAVIGATION CONTROLS */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12">
-        <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center border-b border-white/10 pb-8 mb-12">
+        <div className={`flex flex-col md:flex-row gap-6 justify-between items-start md:items-center border-b pb-8 mb-12 ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
           
           {/* Left: Filter categories */}
           <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -205,10 +207,10 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
                 <button
                   key={cat.value}
                   onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-5 py-2.5 font-mono text-[10px] tracking-widest uppercase transition-all duration-300 border ${
-                    isActive
-                      ? "bg-white text-black border-white font-bold rounded-none"
-                      : "bg-transparent text-white/60 border-white/15 hover:text-white hover:border-white/40 rounded-none"
+                  className={`px-5 py-2.5 font-mono text-[10px] tracking-widest uppercase transition-all duration-300 border rounded-none ${
+                    isDark
+                      ? (isActive ? "bg-white text-black border-white font-bold" : "bg-transparent text-white/60 border-white/15 hover:text-white hover:border-white/40")
+                      : (isActive ? "bg-gray-900 text-white border-gray-900 font-bold" : "bg-transparent text-gray-500 border-gray-300 hover:text-gray-900 hover:border-gray-500")
                   }`}
                 >
                   {cat.label}
@@ -222,7 +224,9 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
             <div className="relative">
               <button
                 onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
-                className="flex items-center gap-3 bg-black border border-white/15 hover:border-white/40 px-5 py-2.5 text-white font-mono text-[10px] tracking-widest uppercase rounded-none"
+                className={`flex items-center gap-3 border px-5 py-2.5 font-mono text-[10px] tracking-widest uppercase rounded-none transition-colors ${
+                  isDark ? 'bg-black border-white/15 hover:border-white/40 text-white' : 'bg-white border-gray-300 hover:border-gray-500 text-gray-900'
+                }`}
               >
                 <span>
                   {language === "vi" ? "SẮP XẾP: " : "SORT BY: "}
@@ -237,31 +241,34 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
                 {isSortDropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setIsSortDropdownOpen(false)} />
-                    <motion.div
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 5 }}
-                      className="absolute right-0 mt-1.5 w-64 bg-[#121414] border border-white/20 shadow-2xl z-20 font-mono text-[10px] tracking-widest uppercase rounded-none"
-                    >
+                      <motion.div
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 5 }}
+                        className={`absolute right-0 mt-1.5 w-64 border shadow-2xl z-20 font-mono text-[10px] tracking-widest uppercase rounded-none ${
+                          isDark ? 'bg-[#121414] border-white/20' : 'bg-white border-gray-200'
+                        }`}
+                      >
                       {[
                         { label: language === "vi" ? "HIỆU NĂNG" : "PERFORMANCE", value: "PERFORMANCE" },
                         { label: language === "vi" ? "GIÁ: CAO XUỐNG THẤP" : "PRICE: HIGH TO LOW", value: "PRICE_HIGH_LOW" },
                         { label: language === "vi" ? "GIÁ: THẤP LÊN CAO" : "PRICE: LOW TO HIGH", value: "PRICE_LOW_HIGH" },
-                      ].map((item) => (
-                        <button
-                          key={item.value}
-                          onClick={() => {
-                            setSortBy(item.value);
-                            setIsSortDropdownOpen(false);
-                          }}
-                          className={`w-full text-left px-5 py-3 hover:bg-[#0066ff]/10 hover:text-white transition-colors flex items-center justify-between rounded-none ${
-                            sortBy === item.value ? "text-[#0066ff] font-bold" : "text-white/70"
-                          }`}
-                        >
-                          <span>{item.label}</span>
+                      ].map((item) => <button
+                            key={item.value}
+                            onClick={() => {
+                              setSortBy(item.value);
+                              setIsSortDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-5 py-3 transition-colors flex items-center justify-between rounded-none ${
+                              isDark
+                                ? (sortBy === item.value ? "text-[#0066ff] font-bold hover:bg-[#0066ff]/10 hover:text-white" : "text-white/70 hover:bg-[#0066ff]/10 hover:text-white")
+                                : (sortBy === item.value ? "text-[#0066ff] font-bold bg-gray-50" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900")
+                            }`}
+                          >
+                            <span>{item.label}</span>
                           {sortBy === item.value && <Check size={12} />}
                         </button>
-                      ))}
+                      )}
                     </motion.div>
                   </>
                 )}
@@ -270,7 +277,9 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
 
             <button
               onClick={() => setSelectedCategory("ALL")}
-              className="p-2.5 border border-white/15 text-white/60 hover:text-white hover:border-white/40 bg-black transition-colors rounded-none"
+              className={`p-2.5 border transition-colors rounded-none ${
+                isDark ? 'border-white/15 text-white/60 hover:text-white hover:border-white/40 bg-black' : 'border-gray-300 text-gray-500 hover:text-gray-900 hover:border-gray-500 bg-white'
+              }`}
               title={language === "vi" ? "Mặc định bộ lọc" : "Reset Filters"}
             >
               <SlidersHorizontal size={14} />
@@ -295,10 +304,12 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.97 }}
                   transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="group relative bg-[#0c0d0f] border border-white/10 overflow-hidden flex flex-col justify-between h-[520px] shadow-none hover:border-[#0066ff] transition-all duration-300 rounded-none"
+                  className={`group relative border overflow-hidden flex flex-col justify-between h-[520px] shadow-none hover:border-[#0066ff] transition-all duration-300 rounded-none ${
+                    isDark ? 'bg-[#0c0d0f] border-white/10' : 'bg-white border-gray-200'
+                  }`}
                 >
                   {/* Image wrapper with high tech zoom */}
-                  <div className="relative w-full h-64 bg-black overflow-hidden p-6 flex items-center justify-center border-b border-white/10 select-none">
+                  <div className={`relative w-full h-64 overflow-hidden p-6 flex items-center justify-center border-b select-none ${isDark ? 'bg-black border-white/10' : 'bg-gray-100 border-gray-100'}`}>
                     <img
                       src={product.image}
                       alt={product.name}
@@ -330,25 +341,25 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
                   </div>
 
                   {/* Product details */}
-                  <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div className={`p-6 flex-1 flex flex-col justify-between ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     <div>
                       <span className="font-mono text-[9px] text-[#0066ff] tracking-widest uppercase font-bold mb-1 block">
                         {product.category}
                       </span>
-                      <h3 className="font-montserrat text-sm md:text-base font-extrabold text-white uppercase tracking-wider mb-2 group-hover:text-[#0066ff] transition-colors line-clamp-1">
+                      <h3 className={`font-montserrat text-sm md:text-base font-extrabold uppercase tracking-wider mb-2 group-hover:text-[#0066ff] transition-colors line-clamp-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         {product.name}
                       </h3>
-                      <p className="font-mono text-sm font-extrabold text-white tracking-widest mb-3">
+                      <p className={`font-mono text-sm font-extrabold tracking-widest mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         {product.price}
                       </p>
-                      <p className="font-sans text-xs text-zinc-400 line-clamp-3 leading-relaxed mb-4">
+                      <p className={`font-sans text-xs line-clamp-3 leading-relaxed mb-4 ${isDark ? 'text-zinc-400' : 'text-gray-500'}`}>
                         {product.description}
                       </p>
 
                       {/* Size selecting interface */}
                       {isClothing && (
                         <div className="flex gap-1.5 mb-4 items-center">
-                          <span className="font-mono text-[8px] text-white/45 tracking-widest uppercase mr-1">
+                          <span className={`font-mono text-[8px] tracking-widest uppercase mr-1 ${isDark ? 'text-white/45' : 'text-gray-400'}`}>
                             SIZE:
                           </span>
                           {(product.category === "FOOTWEAR" 
@@ -359,9 +370,9 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
                               key={s}
                               onClick={(e) => handleSizeSelect(product.id, s, e)}
                               className={`w-5 h-5 font-mono text-[8px] font-bold border transition-colors flex items-center justify-center rounded-none ${
-                                currentSize === s
-                                  ? "bg-white text-black border-white"
-                                  : "bg-transparent text-white/60 border-white/10 hover:border-white/40"
+                                isDark
+                                  ? (currentSize === s ? "bg-white text-black border-white" : "bg-transparent text-white/60 border-white/10 hover:border-white/40")
+                                  : (currentSize === s ? "bg-gray-900 text-white border-gray-900" : "bg-transparent text-gray-500 border-gray-300 hover:border-gray-500")
                               }`}
                             >
                               {s}
@@ -386,11 +397,11 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
         </div>
 
         {filteredAndSortedProducts.length === 0 && (
-          <div className="text-center py-20 border border-dashed border-white/10 mb-24">
-            <p className="font-mono text-xs tracking-widest text-zinc-500 uppercase mb-2">
+          <div className={`text-center py-20 border border-dashed mb-24 ${isDark ? 'border-white/10' : 'border-gray-300 bg-gray-50'}`}>
+            <p className={`font-mono text-xs tracking-widest uppercase mb-2 ${isDark ? 'text-zinc-500' : 'text-gray-400'}`}>
               {language === "vi" ? "KHÔNG CÓ THIẾT BỊ NÀO KHỚP BỘ LỌC" : "NO GEAR FOUND"}
             </p>
-            <p className="font-sans text-xs text-zinc-600">
+            <p className={`font-sans text-xs ${isDark ? 'text-zinc-600' : 'text-gray-500'}`}>
               {language === "vi" ? "Vui lòng chọn bộ lọc khác" : "Please adjust category or sorting filters"}
             </p>
           </div>
@@ -399,10 +410,10 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
       </div>
 
       {/* 4. SPLIT BANNER: UNCOMPROMISING PERFORMANCE */}
-      <section className="bg-black border-t border-b border-white/10 grid grid-cols-1 md:grid-cols-2 min-h-[400px]">
+      <section className={`border-t border-b grid grid-cols-1 md:grid-cols-2 min-h-[400px] ${isDark ? 'bg-black border-white/10' : 'bg-white border-gray-200'}`}>
         
         {/* Left Side: Dark graphic background */}
-        <div className="relative overflow-hidden flex items-center justify-center h-[280px] md:h-auto border-b md:border-b-0 md:border-r border-white/10">
+        <div className={`relative overflow-hidden flex items-center justify-center h-[280px] md:h-auto border-b md:border-b-0 md:border-r ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
           <img
             src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=1200&auto=format&fit=crop"
             alt="Running athlete under heavy training load"
@@ -419,11 +430,11 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
         </div>
 
         {/* Right Side: Bold text presentation block */}
-        <div className="bg-[#0b0c0e] p-8 sm:p-16 flex flex-col justify-center">
+        <div className={`p-8 sm:p-16 flex flex-col justify-center ${isDark ? 'bg-[#0b0c0e] text-white' : 'bg-gray-50 text-gray-900'}`}>
           <h2 className="font-anton text-3xl sm:text-4xl lg:text-5xl tracking-wider uppercase mb-6 leading-tight">
             {language === "vi" ? "HIỆU NĂNG KHÔNG THỎA HIỆP." : "UNCOMPROMISING PERFORMANCE."}
           </h2>
-          <p className="font-sans text-sm text-zinc-400 leading-relaxed max-w-lg mb-8">
+          <p className={`font-sans text-sm leading-relaxed max-w-lg mb-8 ${isDark ? 'text-zinc-400' : 'text-gray-600'}`}>
             {language === "vi"
               ? "Các dòng sản phẩm bán chạy nhất của chúng tôi không chỉ dừng lại ở sự ưa chuộng; chúng được thử nghiệm và đo đạc trực tiếp trong các môi trường tập luyện khắc nghiệt nhất để vượt qua kỳ vọng của những vận động viên khó tính."
               : "Our best sellers aren't just popular; they are tested in high-stakes training environments to exceed athletic expectations."}
@@ -447,7 +458,7 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
           <span className="font-mono text-[10px] text-[#0066ff] tracking-[0.3em] uppercase font-bold block mb-2">
             {language === "vi" ? "Ý KIẾN CHUYÊN GIA" : "ATHLETE INTELLIGENCE"}
           </span>
-          <h2 className="font-anton text-3xl sm:text-5xl tracking-wider uppercase mb-4 text-white">
+          <h2 className={`font-anton text-3xl sm:text-5xl tracking-wider uppercase mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             {language === "vi" ? "ĐƯỢC KIỂM CHỨNG TRÊN SÂN ĐẤU" : "TRUSTED BY THE ELITE"}
           </h2>
           <div className="w-12 h-1 bg-[#0066ff] mx-auto" />
@@ -461,7 +472,9 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="bg-[#0b0c0e] border border-white/10 p-8 flex flex-col justify-between h-full rounded-none"
+              className={`border p-8 flex flex-col justify-between h-full rounded-none ${
+                isDark ? 'bg-[#0b0c0e] border-white/10' : 'bg-white border-gray-200'
+              }`}
             >
               <div>
                 <div className="flex gap-1 mb-6 text-[#0066ff]">
@@ -469,13 +482,13 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
                     <Star key={i} size={14} className="fill-current" />
                   ))}
                 </div>
-                <p className="font-sans text-xs sm:text-sm text-zinc-300 italic leading-relaxed mb-8">
+                <p className={`font-sans text-xs sm:text-sm italic leading-relaxed mb-8 ${isDark ? 'text-zinc-300' : 'text-gray-600'}`}>
                   "{rev.text}"
                 </p>
               </div>
 
-              <div className="border-t border-white/10 pt-5 mt-auto">
-                <p className="font-montserrat text-xs font-black text-white tracking-widest uppercase mb-1">
+              <div className={`border-t pt-5 mt-auto ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
+                <p className={`font-montserrat text-xs font-black tracking-widest uppercase mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   {rev.name}
                 </p>
                 <p className="font-mono text-[9px] text-[#0066ff] tracking-wider uppercase font-bold">
@@ -488,13 +501,13 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
       </section>
 
       {/* 6. FAQ ACCORDION SECTION */}
-      <section className="bg-[#070809] border-t border-white/10 py-24">
+      <section className={`border-t py-24 ${isDark ? 'bg-[#070809] border-white/10' : 'bg-gray-100 border-gray-200'}`}>
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-16">
             <span className="font-mono text-[10px] text-[#0066ff] tracking-[0.3em] uppercase font-bold block mb-2">
               INTEL / FAQ
             </span>
-            <h2 className="font-anton text-2xl sm:text-4xl tracking-wider uppercase mb-4 text-white">
+            <h2 className={`font-anton text-2xl sm:text-4xl tracking-wider uppercase mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
               {language === "vi" ? "CÂU HỎI KỸ THUẬT" : "FREQUENTLY ASKED QUESTIONS"}
             </h2>
             <div className="w-12 h-1 bg-[#0066ff] mx-auto" />
@@ -506,13 +519,17 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
               return (
                 <div
                   key={index}
-                  className="bg-black border border-white/10 overflow-hidden transition-all duration-300 rounded-none"
+                  className={`border overflow-hidden transition-all duration-300 rounded-none ${
+                    isDark ? 'bg-black border-white/10' : 'bg-white border-gray-200'
+                  }`}
                 >
                   <button
                     onClick={() => toggleFaq(index)}
-                    className="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors focus:outline-none rounded-none"
+                    className={`w-full flex justify-between items-center p-6 text-left transition-colors focus:outline-none rounded-none ${
+                      isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+                    }`}
                   >
-                    <span className="font-montserrat text-xs sm:text-sm font-black tracking-widest uppercase text-white flex items-center gap-3 pr-4">
+                    <span className={`font-montserrat text-xs sm:text-sm font-black tracking-widest uppercase flex items-center gap-3 pr-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                       <HelpCircle size={14} className="text-[#0066ff] flex-shrink-0" />
                       {faq.q}
                     </span>
@@ -531,7 +548,9 @@ export default function BestSellersPage({ onOpenQuickView, onAddToCart, onNaviga
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.3 }}
                       >
-                        <div className="p-6 pt-0 border-t border-white/5 text-zinc-400 font-sans text-xs sm:text-sm leading-relaxed">
+                        <div className={`p-6 pt-0 border-t font-sans text-xs sm:text-sm leading-relaxed ${
+                          isDark ? 'border-white/5 text-zinc-400' : 'border-gray-100 text-gray-600'
+                        }`}>
                           {faq.a}
                         </div>
                       </motion.div>

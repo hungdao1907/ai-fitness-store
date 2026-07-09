@@ -17,13 +17,11 @@ export default function HeroSection({ onOpenAdvice, onNavigate }: HeroSectionPro
 
   const handleCtaClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (onNavigate) {
-      onNavigate("/best-sellers");
+    const target = document.querySelector("#featured-categories") || document.querySelector("#best-sellers");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-      const target = document.querySelector("#best-sellers");
-      if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+      if (onNavigate) onNavigate("/best-sellers");
     }
   };
 
@@ -52,7 +50,7 @@ export default function HeroSection({ onOpenAdvice, onNavigate }: HeroSectionPro
           className="max-w-3xl"
         >
           {/* Headline Display using the custom Anton webfont */}
-          <h1 className="font-anton text-[48px] leading-[46px] md:text-[84px] md:leading-[80px] text-white tracking-wide uppercase select-none mb-6 max-w-2xl break-words">
+          <h1 className="font-anton text-5xl md:text-6xl lg:text-7xl leading-tight md:leading-[1.1] text-white tracking-wide uppercase select-none mb-6 max-w-2xl break-words">
             {t.hero.title}
           </h1>
 

@@ -108,35 +108,68 @@ export default function AdminApp() {
 
   // Sync state to local storage as fallback/cache
   useEffect(() => {
-    localStorage.setItem('hf_logged_in', String(isLoggedIn));
+    try {
+      localStorage.setItem('hf_logged_in', String(isLoggedIn));
+    } catch (e) {
+      console.warn('Failed to save to localStorage', e);
+    }
   }, [isLoggedIn]);
 
   useEffect(() => {
-    localStorage.setItem('hf_user_role', userRole);
+    try {
+      localStorage.setItem('hf_user_role', userRole);
+    } catch (e) {
+      console.warn('Failed to save to localStorage', e);
+    }
   }, [userRole]);
 
   useEffect(() => {
-    localStorage.setItem('hf_products', JSON.stringify(products));
+    try {
+      // Images are now short URLs (not base64), so they won't exceed quota
+      localStorage.setItem('hf_products', JSON.stringify(products));
+    } catch (e) {
+      console.warn('Failed to save hf_products to localStorage', e);
+    }
   }, [products]);
 
   useEffect(() => {
-    localStorage.setItem('hf_categories', JSON.stringify(categories));
+    try {
+      localStorage.setItem('hf_categories', JSON.stringify(categories));
+    } catch (e) {
+      console.warn('Failed to save hf_categories to localStorage', e);
+    }
   }, [categories]);
 
   useEffect(() => {
-    localStorage.setItem('hf_orders', JSON.stringify(orders));
+    try {
+      localStorage.setItem('hf_orders', JSON.stringify(orders));
+    } catch (e) {
+      console.warn('Failed to save hf_orders to localStorage', e);
+    }
   }, [orders]);
 
   useEffect(() => {
-    localStorage.setItem('hf_customers', JSON.stringify(customers));
+    try {
+      localStorage.setItem('hf_customers', JSON.stringify(customers));
+    } catch (e) {
+      console.warn('Failed to save hf_customers to localStorage', e);
+    }
   }, [customers]);
 
   useEffect(() => {
-    localStorage.setItem('hf_promotions', JSON.stringify(promotions));
+    try {
+      localStorage.setItem('hf_promotions', JSON.stringify(promotions));
+    } catch (e) {
+      console.warn('Failed to save hf_promotions to localStorage', e);
+    }
   }, [promotions]);
 
   useEffect(() => {
-    localStorage.setItem('hf_staff', JSON.stringify(staffList));
+    try {
+      localStorage.setItem('hf_staff', JSON.stringify(staffList));
+    } catch (e) {
+      console.warn('Failed to save hf_staff to localStorage', e);
+    }
   }, [staffList]);
 
   // Handlers for Products (synchronizing to Prisma DB)
@@ -535,6 +568,7 @@ export default function AdminApp() {
         isOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
         userRole={userRole}
+        language={language}
       />
 
       {/* Main Content Area */}

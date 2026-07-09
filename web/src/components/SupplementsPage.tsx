@@ -3,6 +3,7 @@ import { Search, ChevronDown, Heart, Plus, Ban, SlidersHorizontal, ArrowRight, Z
 import { Product, CartItem } from "../types";
 import { useProducts } from "../context/ProductContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useTheme } from "../context/ThemeContext";
 
 interface SupplementsPageProps {
   onOpenQuickView: (productId: string) => void;
@@ -13,6 +14,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
   const { products: PRODUCTS } = useProducts();
 
   const { language, t } = useLanguage();
+  const { isDark } = useTheme();
 
   // Search, Filter and Sort States
   const [searchQuery, setSearchQuery] = useState("");
@@ -126,7 +128,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
   };
 
   return (
-    <div className="bg-[#0c0f0f] text-white min-h-screen">
+    <div className={`min-h-screen transition-colors ${isDark ? 'bg-[#0c0f0f] text-white' : 'bg-gray-50 text-gray-900'}`}>
       {/* 1. HERO HEADER */}
       <section className="relative h-[65vh] min-h-[500px] w-full flex items-center justify-center overflow-hidden">
         {/* Background Image Grayscale Overlay */}
@@ -164,7 +166,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
 
       {/* 2. FEATURED CATEGORIES (PROTEIN, PRE WORKOUT, RECOVERY) */}
       <section className="max-w-7xl mx-auto px-6 md:px-16 py-16">
-        <h2 className="font-anton text-3xl tracking-wider text-white mb-8 border-l-4 border-[#0066ff] pl-4 uppercase">
+        <h2 className={`font-anton text-3xl tracking-wider mb-8 border-l-4 border-[#0066ff] pl-4 uppercase ${isDark ? 'text-white' : 'text-gray-900'}`}>
           {language === "vi" ? "NHÓM NĂNG LƯỢNG TIÊU BIỂU" : "FEATURED NUTRITION"}
         </h2>
 
@@ -173,7 +175,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
           {/* Card 1: Protein */}
           <div
             onClick={() => selectCollectionCategory("PROTEIN")}
-            className="group relative cursor-pointer overflow-hidden bg-zinc-950 border border-zinc-800/60 h-[300px] transition-all"
+            className={`group relative cursor-pointer overflow-hidden border h-[300px] transition-all ${isDark ? 'bg-zinc-950 border-zinc-800/60' : 'bg-white border-gray-200 shadow-md'}`}
           >
             <div className="absolute inset-0 bg-black/60 z-10 group-hover:bg-black/45 transition-all duration-300" />
             <img
@@ -201,7 +203,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
           {/* Card 2: Pre Workout */}
           <div
             onClick={() => selectCollectionCategory("PRE WORKOUT")}
-            className="group relative cursor-pointer overflow-hidden bg-zinc-950 border border-zinc-800/60 h-[300px] transition-all"
+            className={`group relative cursor-pointer overflow-hidden border h-[300px] transition-all ${isDark ? 'bg-zinc-950 border-zinc-800/60' : 'bg-white border-gray-200 shadow-md'}`}
           >
             <div className="absolute inset-0 bg-black/60 z-10 group-hover:bg-black/45 transition-all duration-300" />
             <img
@@ -226,7 +228,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
           {/* Card 3: Recovery */}
           <div
             onClick={() => selectCollectionCategory("RECOVERY")}
-            className="group relative cursor-pointer overflow-hidden bg-zinc-950 border border-zinc-800/60 h-[300px] transition-all"
+            className={`group relative cursor-pointer overflow-hidden border h-[300px] transition-all ${isDark ? 'bg-zinc-950 border-zinc-800/60' : 'bg-white border-gray-200 shadow-md'}`}
           >
             <div className="absolute inset-0 bg-black/60 z-10 group-hover:bg-black/45 transition-all duration-300" />
             <img
@@ -252,7 +254,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
 
       {/* 3. SEARCH & INTERACTIVE FILTER ROW */}
       <section id="supp-products-grid" className="max-w-7xl mx-auto px-6 md:px-16 pt-8 pb-12">
-        <div className="border-t border-b border-zinc-800/80 py-4 flex flex-col md:flex-row items-center justify-between gap-4 select-none">
+        <div className={`border-t border-b py-4 flex flex-col md:flex-row items-center justify-between gap-4 select-none ${isDark ? 'border-zinc-800/80' : 'border-gray-200'}`}>
           
           {/* Search Box */}
           <div className="relative w-full md:w-72">
@@ -262,12 +264,12 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={language === "vi" ? "TÌM SẢN PHẨM DINH DƯỠNG..." : "SEARCH SUPPLEMENTS..."}
-              className="bg-black/50 hover:bg-black/80 focus:bg-black w-full border border-zinc-800 px-4 py-2.5 pl-10 font-mono text-[11px] tracking-widest text-[#ececec] uppercase focus:outline-none focus:border-[#0066ff] placeholder:text-zinc-600 transition-all font-bold"
+              className={`w-full border px-4 py-2.5 pl-10 font-mono text-[11px] tracking-widest uppercase focus:outline-none focus:border-[#0066ff] transition-all font-bold rounded-none ${isDark ? 'bg-black/50 hover:bg-black/80 focus:bg-black border-zinc-800 text-[#ececec] placeholder:text-zinc-600' : 'bg-white hover:bg-gray-50 focus:bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'}`}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white font-sans text-xs bg-zinc-900 px-1"
+                className={`absolute right-3 top-1/2 -translate-y-1/2 font-sans text-xs px-1 transition-colors ${isDark ? 'text-zinc-500 hover:text-white bg-zinc-900' : 'text-gray-400 hover:text-gray-900 bg-gray-100'}`}
               >
                 Clear
               </button>
@@ -281,14 +283,14 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("category")}
-                className="flex items-center gap-2 bg-black hover:bg-zinc-900 border border-zinc-850 px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors"
+                className={`flex items-center gap-2 border px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none ${isDark ? 'bg-black hover:bg-zinc-900 border-zinc-850' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'}`}
               >
                 <span>{language === "vi" ? "DÒNG DINH DƯỠNG" : "CATEGORY"}: {selectedSubCategory}</span>
                 <ChevronDown className={`w-3 h-3 text-zinc-400 transition-transform ${activeDropdown === "category" ? "rotate-180" : ""}`} />
               </button>
 
               {activeDropdown === "category" && (
-                <div className="absolute right-0 mt-1 z-30 w-48 bg-zinc-950 border border-zinc-800 shadow-2xl uppercase font-mono text-[10px]">
+                <div className={`absolute right-0 mt-1 z-30 w-48 border shadow-2xl uppercase font-mono text-[10px] ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-gray-200'}`}>
                   {["ALL", "PROTEIN", "PRE WORKOUT", "RECOVERY"].map((cat) => (
                     <button
                       key={cat}
@@ -296,8 +298,10 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
                         setSelectedSubCategory(cat);
                         setActiveDropdown(null);
                       }}
-                      className={`w-full text-left px-4 py-2.5 border-b border-zinc-900 last:border-0 transition-colors ${
-                        selectedSubCategory === cat ? "text-[#0066ff] bg-zinc-900" : "text-zinc-400 hover:text-white"
+                      className={`w-full text-left px-4 py-2.5 border-b last:border-0 transition-colors ${
+                        isDark 
+                          ? (selectedSubCategory === cat ? "text-[#0066ff] bg-zinc-900 border-zinc-900" : "text-zinc-400 hover:text-white border-zinc-900")
+                          : (selectedSubCategory === cat ? "text-[#0066ff] bg-gray-50 border-gray-100" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-100")
                       }`}
                     >
                       {cat}
@@ -311,7 +315,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("price")}
-                className="flex items-center gap-2 bg-black hover:bg-zinc-900 border border-zinc-850 px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors"
+                className={`flex items-center gap-2 border px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none ${isDark ? 'bg-black hover:bg-zinc-900 border-zinc-850' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'}`}
               >
                 <span>
                   {language === "vi" ? "MỨC GIÁ" : "PRICE"}:{" "}
@@ -325,7 +329,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
               </button>
 
               {activeDropdown === "price" && (
-                <div className="absolute right-0 mt-1 z-30 w-48 bg-zinc-950 border border-zinc-800 shadow-2xl uppercase font-mono text-[10px]">
+                <div className={`absolute right-0 mt-1 z-30 w-48 border shadow-2xl uppercase font-mono text-[10px] ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-gray-200'}`}>
                   {[
                     { label: "ALL PRICES", value: "ALL" },
                     { label: "UNDER $45", value: "UNDER_45" },
@@ -337,8 +341,10 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
                         setPriceRange(pr.value);
                         setActiveDropdown(null);
                       }}
-                      className={`w-full text-left px-4 py-2.5 border-b border-zinc-900 last:border-0 transition-colors ${
-                        priceRange === pr.value ? "text-[#0066ff] bg-zinc-900" : "text-zinc-400 hover:text-white"
+                      className={`w-full text-left px-4 py-2.5 border-b last:border-0 transition-colors ${
+                        isDark 
+                          ? (priceRange === pr.value ? "text-[#0066ff] bg-zinc-900 border-zinc-900" : "text-zinc-400 hover:text-white border-zinc-900")
+                          : (priceRange === pr.value ? "text-[#0066ff] bg-gray-50 border-gray-100" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-100")
                       }`}
                     >
                       {pr.label}
@@ -352,7 +358,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("sort")}
-                className="flex items-center gap-2 bg-[#121415] hover:bg-zinc-900 border border-zinc-800 text-zinc-300 px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors"
+                className={`flex items-center gap-2 border px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none ${isDark ? 'bg-[#121415] hover:bg-zinc-900 border-zinc-800 text-zinc-300' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'}`}
               >
                 <SlidersHorizontal className="w-3 h-3 text-[#0066ff]" />
                 <span>{sortBy === "FEATURED" ? "SORT BY: FEATURED" : `SORT: ${sortBy.replace(/_/g, " ")}`}</span>
@@ -360,7 +366,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
               </button>
 
               {activeDropdown === "sort" && (
-                <div className="absolute right-0 mt-1 z-30 w-52 bg-zinc-950 border border-zinc-800 shadow-2xl uppercase font-mono text-[10px]">
+                <div className={`absolute right-0 mt-1 z-30 w-52 border shadow-2xl uppercase font-mono text-[10px] ${isDark ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-gray-200'}`}>
                   {[
                     { label: "FEATURED BOLD", value: "FEATURED" },
                     { label: "NEWEST BATCH", value: "NEWEST" },
@@ -374,8 +380,10 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
                         setSortBy(item.value);
                         setActiveDropdown(null);
                       }}
-                      className={`w-full text-left px-4 py-2.5 border-b border-zinc-900 last:border-0 transition-colors ${
-                        sortBy === item.value ? "text-[#0066ff] bg-zinc-900" : "text-zinc-400 hover:text-white"
+                      className={`w-full text-left px-4 py-2.5 border-b last:border-0 transition-colors ${
+                        isDark 
+                          ? (sortBy === item.value ? "text-[#0066ff] bg-zinc-900 border-zinc-900" : "text-zinc-400 hover:text-white border-zinc-900")
+                          : (sortBy === item.value ? "text-[#0066ff] bg-gray-50 border-gray-100" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-100")
                       }`}
                     >
                       {item.label}
@@ -390,7 +398,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
 
         {/* Filter results counter */}
         {searchQuery || selectedSubCategory !== "ALL" || priceRange !== "ALL" || sortBy !== "FEATURED" ? (
-          <div className="mt-3 flex items-center justify-between text-zinc-500 font-mono text-[10px] tracking-widest bg-zinc-950 px-4 py-2 border border-zinc-900/60 uppercase">
+          <div className={`mt-3 flex items-center justify-between font-mono text-[10px] tracking-widest px-4 py-2 border uppercase ${isDark ? 'bg-zinc-950 border-zinc-900/60 text-zinc-500' : 'bg-gray-50 border-gray-200 text-gray-500'}`}>
             <span>
               {language === "vi"
                 ? `Tìm thấy ${filteredAndSortedProducts.length} sản phẩm dinh dưỡng`
@@ -414,9 +422,9 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
       {/* 4. PRODUCTS DISPLAY GRID */}
       <section className="max-w-7xl mx-auto px-6 md:px-16 pb-16">
         {filteredAndSortedProducts.length === 0 ? (
-          <div className="text-center py-24 bg-[#0e1011] border border-zinc-900 rounded-sm">
-            <Ban className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
-            <p className="font-mono text-[11px] tracking-widest text-zinc-400 uppercase font-bold">
+          <div className={`text-center py-24 border rounded-sm ${isDark ? 'bg-[#0e1011] border-zinc-900' : 'bg-gray-50 border-gray-200'}`}>
+            <Ban className={`w-12 h-12 mx-auto mb-4 ${isDark ? 'text-zinc-700' : 'text-gray-300'}`} />
+            <p className={`font-mono text-[11px] tracking-widest uppercase font-bold ${isDark ? 'text-zinc-400' : 'text-gray-500'}`}>
               {language === "vi"
                 ? "Không tìm thấy thực phẩm bổ sung nào phù hợp lựa chọn."
                 : "No matching nutrition payloads found in digital roster."}
@@ -430,11 +438,13 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
                 <div
                   key={p.id}
                   onClick={() => onOpenQuickView(p.id)}
-                  className="group relative cursor-pointer bg-black/40 hover:bg-black border border-zinc-900 hover:border-[#0066ff]/40 transition-all duration-300 flex flex-col justify-between"
+                  className={`group relative cursor-pointer border transition-all duration-300 flex flex-col justify-between ${
+                    isDark ? 'bg-black/40 hover:bg-black border-zinc-900 hover:border-[#0066ff]/40' : 'bg-white hover:shadow-xl border-gray-100 hover:border-[#0066ff]/30'
+                  }`}
                   style={{ minHeight: "380px" }}
                 >
                   {/* Top Image & badges zone */}
-                  <div className="relative w-full aspect-square bg-[#101213] overflow-hidden flex items-center justify-center">
+                  <div className={`relative w-full aspect-square overflow-hidden flex items-center justify-center ${isDark ? 'bg-[#101213]' : 'bg-gray-100'}`}>
                     
                     {/* Grayscale styled nutrition image with subtle hover contrast boost */}
                     <img
@@ -446,7 +456,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
 
                     {/* Sold out overlay tag */}
                     {p.isSoldOut && (
-                      <div className="absolute top-4 left-4 z-10 bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-[9px] font-bold px-2 py-0.5 tracking-widest uppercase">
+                      <div className={`absolute top-4 left-4 z-10 border font-mono text-[9px] font-bold px-2 py-0.5 tracking-widest uppercase ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400' : 'bg-white border-gray-200 text-gray-500'}`}>
                         {language === "vi" ? "HẾT HÀNG" : "SOLD OUT"}
                       </div>
                     )}
@@ -461,18 +471,20 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
                     {/* Favorite Heart Icon Button */}
                     <button
                       onClick={(e) => toggleFavorite(p.id, e)}
-                      className="absolute top-4 right-4 z-10 bg-[#0c0f0f]/80 hover:bg-black hover:text-[#ff3355] text-zinc-400 p-2 border border-zinc-800 transition-all duration-200"
+                      className={`absolute top-4 right-4 z-10 p-2 border transition-all duration-200 ${
+                        isDark ? 'bg-[#0c0f0f]/80 hover:bg-black hover:text-[#ff3355] text-zinc-400 border-zinc-800' : 'bg-white/80 hover:bg-white text-gray-400 hover:text-[#ff3355] border-gray-200'
+                      }`}
                     >
                       <Heart
-                        className={`w-3.5 h-3.5 ${isFav ? "fill-[#ff3355] text-[#ff3355]" : "text-zinc-400"}`}
+                        className={`w-3.5 h-3.5 ${isFav ? "fill-[#ff3355] text-[#ff3355]" : ""}`}
                       />
                     </button>
 
                     {/* Quick view hover icon */}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-300">
-                      <div className="border border-white/20 p-3 bg-[#0c0f0f] flex items-center gap-2 hover:border-[#0066ff]">
+                      <div className={`border p-3 flex items-center gap-2 hover:border-[#0066ff] ${isDark ? 'bg-[#0c0f0f] border-white/20' : 'bg-white border-gray-200'}`}>
                         <Eye className="w-4 h-4 text-[#0066ff]" />
-                        <span className="font-montserrat text-[10px] font-bold tracking-widest uppercase text-white">
+                        <span className={`font-montserrat text-[10px] font-bold tracking-widest uppercase ${isDark ? 'text-white' : 'text-gray-900'}`}>
                           {language === "vi" ? "XEM NHANH" : "QUICK VIEW"}
                         </span>
                       </div>
@@ -485,13 +497,13 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
                       <span className="font-mono text-[9px] font-bold tracking-widest text-[#0066ff] uppercase block mb-1">
                         {p.category || "PROTEIN"}
                       </span>
-                      <h3 className="font-montserrat text-xs font-bold tracking-wider text-[#eaeaea] group-hover:text-white transition-colors uppercase leading-tight mb-2">
+                      <h3 className={`font-montserrat text-xs font-bold tracking-wider transition-colors uppercase leading-tight mb-2 ${isDark ? 'text-[#eaeaea] group-hover:text-white' : 'text-gray-800 group-hover:text-black'}`}>
                         {p.name}
                       </h3>
                     </div>
 
                     <div className="flex items-center justify-between mt-4">
-                      <span className="font-mono text-sm font-extrabold text-[#ffffff]">
+                      <span className={`font-mono text-sm font-extrabold ${isDark ? 'text-[#ffffff]' : 'text-gray-900'}`}>
                         {p.price}
                       </span>
 
@@ -499,7 +511,7 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
                       {p.isSoldOut ? (
                         <button
                           disabled
-                          className="bg-zinc-950 border border-zinc-850 text-zinc-700 p-2 rounded-full cursor-not-allowed"
+                          className={`border p-2 rounded-full cursor-not-allowed ${isDark ? 'bg-zinc-950 border-zinc-850 text-zinc-700' : 'bg-gray-100 border-gray-200 text-gray-400'}`}
                           title="Temporarily unavailable"
                         >
                           <Ban className="w-3.5 h-3.5" />
@@ -507,7 +519,9 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
                       ) : (
                         <button
                           onClick={(e) => handleQuickAdd(p, e)}
-                          className="bg-black hover:bg-[#0066ff] hover:text-white text-zinc-300 border border-zinc-800 hover:border-[#0066ff] p-2 rounded-full transition-all duration-200 cursor-pointer shadow-md shadow-black/40"
+                          className={`hover:bg-[#0066ff] hover:text-white border hover:border-[#0066ff] p-2 rounded-full transition-all duration-200 cursor-pointer shadow-md ${
+                            isDark ? 'bg-black text-zinc-300 border-zinc-800 shadow-black/40' : 'bg-white text-gray-700 border-gray-200 shadow-gray-200/50'
+                          }`}
                           title="Add to workout nutrition stack"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -531,7 +545,9 @@ export default function SupplementsPage({ onOpenQuickView, onAddToCart }: Supple
                   : "All current active laboratory products are loaded."
               );
             }}
-            className="border border-[#424656]/50 hover:border-[#0066ff] bg-black hover:bg-[#0066ff]/5 text-zinc-300 hover:text-white font-montserrat text-[10px] font-extrabold tracking-[0.25em] py-3.5 px-10 transition-all uppercase rounded-none"
+            className={`border hover:border-[#0066ff] hover:bg-[#0066ff]/5 font-montserrat text-[10px] font-extrabold tracking-[0.25em] py-3.5 px-10 transition-all uppercase rounded-none ${
+              isDark ? 'border-[#424656]/50 bg-black text-zinc-300 hover:text-white' : 'border-gray-300 bg-white text-gray-600 hover:text-gray-900'
+            }`}
           >
             {language === "vi" ? "HIỂN THỊ THÊM SẢN PHẨM" : "LOAD MORE PRODUCTS"}
           </button>

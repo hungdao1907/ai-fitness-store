@@ -3,6 +3,7 @@ import { Search, ChevronDown, Heart, Plus, Ban, SlidersHorizontal, ArrowRight, E
 import { Product, CartItem } from "../types";
 import { useProducts } from "../context/ProductContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useTheme } from "../context/ThemeContext";
 
 interface AccessoriesPageProps {
   onOpenQuickView: (productId: string) => void;
@@ -14,6 +15,7 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
   const { products: PRODUCTS } = useProducts();
 
   const { language, t } = useLanguage();
+  const { isDark } = useTheme();
 
   // Search, Filter and Sort States
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,7 +31,11 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
 
   // Filter products belonging to accessories category (those starting with "acc-")
   const accProductsRaw = useMemo(() => {
-    return PRODUCTS.filter((p) => (p.category === "Phụ kiện" || p.category === "Accessories"));
+    return PRODUCTS.filter((p) => {
+      const cat = p.category?.toUpperCase() || "";
+      const id = p.id?.toLowerCase() || "";
+      return cat === "PHỤ KIỆN" || cat === "ACCESSORIES" || cat === "BELTS" || cat === "WRAPS" || cat === "BAGS" || cat === "BANDS" || cat === "STRAPS" || cat === "SLEEVES" || cat === "SHAKERS" || cat === "GLOVES" || id.includes("acc-");
+    });
   }, [PRODUCTS]);
 
   // Map translations for product dynamic info
@@ -86,7 +92,29 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
 
     // Category Filter
     if (selectedSubCategory !== "ALL") {
-      result = result.filter((p) => p.category?.toUpperCase() === selectedSubCategory.toUpperCase());
+      result = result.filter((p) => {
+        const cat = p.category?.toUpperCase() || "";
+        const name = p.name?.toUpperCase() || "";
+        const desc = p.description?.toUpperCase() || "";
+        const sel = selectedSubCategory.toUpperCase();
+        
+        if (sel === "BELTS") {
+          return cat === "BELTS" || name.includes("BELT") || name.includes("ĐAI") || desc.includes("BELT");
+        }
+        if (sel === "WRAPS") {
+          return cat === "WRAPS" || name.includes("WRAP") || name.includes("QUẤN") || name.includes("BĂNG") || desc.includes("WRAP");
+        }
+        if (sel === "BAGS") {
+          return cat === "BAGS" || name.includes("BAG") || name.includes("TÚI") || name.includes("BALO") || desc.includes("BAG");
+        }
+        if (sel === "BANDS") return cat === "BANDS" || name.includes("BAND") || name.includes("DÂY");
+        if (sel === "STRAPS") return cat === "STRAPS" || name.includes("STRAP") || name.includes("KÉO");
+        if (sel === "SLEEVES") return cat === "SLEEVES" || name.includes("SLEEVE") || name.includes("BẢO VỆ");
+        if (sel === "SHAKERS") return cat === "SHAKERS" || name.includes("SHAKER") || name.includes("BÌNH");
+        if (sel === "GLOVES") return cat === "GLOVES" || name.includes("GLOVE") || name.includes("GĂNG");
+
+        return cat === sel;
+      });
     }
 
     // Price Filter
@@ -127,15 +155,15 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
   };
 
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className={`min-h-screen transition-colors ${isDark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'}`}>
       {/* 1. HERO HEADER */}
       <section className="relative h-[65vh] min-h-[500px] w-full flex items-center justify-center overflow-hidden">
         {/* Background Image Grayscale Overlay */}
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1605296867304-46d5465a25f1?q=80&w=1600&auto=format&fit=crop"
+            src="/heavy_deadlift.png"
             alt="Accessories Peak Performance Gym Gear"
-            className="w-full h-full object-cover filter brightness-[0.25] contrast-[1.2] grayscale hover:scale-105 transition-transform duration-1000"
+            className="w-full h-full object-cover filter brightness-[0.4] contrast-[1.2] grayscale hover:scale-105 transition-transform duration-1000"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/65" />
         </div>
@@ -170,13 +198,13 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
           {/* Large Left Card: Lifting Belts */}
           <div
             onClick={() => selectCollectionCategory("BELTS")}
-            className="group relative cursor-pointer overflow-hidden bg-zinc-950 border border-zinc-900/80 h-[380px] lg:h-[450px] lg:col-span-2 transition-all flex flex-col justify-end p-8"
+            className={`group relative cursor-pointer overflow-hidden border h-[380px] lg:h-[450px] lg:col-span-2 transition-all flex flex-col justify-end p-8 ${isDark ? 'bg-zinc-950 border-zinc-900/80' : 'bg-white border-gray-200 shadow-md'}`}
           >
-            <div className="absolute inset-0 bg-black/60 z-10 group-hover:bg-black/40 transition-all duration-300" />
+            <div className="absolute inset-0 bg-black/20 z-10 group-hover:bg-black/0 transition-all duration-300" />
             <img
-              src="https://images.unsplash.com/photo-1605296867304-46d5465a25f1?auto=format&fit=crop&q=80&w=1200"
+              src="/lifting_belt.png"
               alt="Lifting Belts"
-              className="absolute inset-0 w-full h-full object-cover filter brightness-[0.35] contrast-[1.1] grayscale group-hover:scale-103 transition-transform duration-700"
+              className="absolute inset-0 w-full h-full object-cover filter brightness-[0.7] contrast-[1.1] grayscale group-hover:scale-103 transition-transform duration-700"
             />
             
             {/* Blue Badge */}
@@ -185,10 +213,10 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
             </div>
 
             <div className="relative z-20 max-w-md select-none">
-              <h3 className="font-anton text-3xl tracking-wider text-white uppercase mb-1">
+              <h3 className={`font-anton text-3xl tracking-wider uppercase mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                 {language === "vi" ? "ĐAI LƯNG TẬP TẠ" : "LIFTING BELTS"}
               </h3>
-              <p className="font-montserrat text-xs text-zinc-400 tracking-wider font-light mb-5">
+              <p className={`font-montserrat text-xs tracking-wider font-light mb-5 ${isDark ? 'text-zinc-400' : 'text-gray-600'}`}>
                 {language === "vi" ? "Ổn định vùng cơ cốt lõi khi gánh tạ nặng." : "Core stability for heavy loads."}
               </p>
               <div className="flex items-center gap-2 text-white font-mono text-[10px] font-bold uppercase tracking-[0.2em] group-hover:text-[#0066ff] transition-colors">
@@ -203,19 +231,19 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
             {/* Card 2: Wrist Wraps */}
             <div
               onClick={() => selectCollectionCategory("WRAPS")}
-              className="group relative cursor-pointer overflow-hidden bg-zinc-950 border border-zinc-900/80 h-[178px] lg:h-auto transition-all flex flex-col justify-end p-6"
+              className={`group relative cursor-pointer overflow-hidden border h-[178px] lg:h-auto transition-all flex flex-col justify-end p-6 ${isDark ? 'bg-zinc-950 border-zinc-900/80' : 'bg-white border-gray-200 shadow-md'}`}
             >
-              <div className="absolute inset-0 bg-black/70 z-10 group-hover:bg-black/50 transition-all duration-300" />
+              <div className="absolute inset-0 bg-black/30 z-10 group-hover:bg-black/10 transition-all duration-300" />
               <img
                 src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=600"
                 alt="Wrist Wraps"
-                className="absolute inset-0 w-full h-full object-cover filter brightness-[0.3] contrast-[1.15] grayscale group-hover:scale-103 transition-transform duration-700"
+                className="absolute inset-0 w-full h-full object-cover filter brightness-[0.7] contrast-[1.15] grayscale group-hover:scale-103 transition-transform duration-700"
               />
               <div className="relative z-20 select-none">
-                <h3 className="font-anton text-2xl tracking-wider text-white uppercase mb-1">
+                <h3 className={`font-anton text-2xl tracking-wider uppercase mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   {language === "vi" ? "BĂNG QUẤN CỔ TAY" : "WRIST WRAPS"}
                 </h3>
-                <div className="flex items-center gap-2 text-zinc-400 font-mono text-[9px] font-bold uppercase tracking-[0.15em] group-hover:text-white transition-colors">
+                <div className={`flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.15em] transition-colors ${isDark ? 'text-zinc-400 group-hover:text-white' : 'text-gray-500 group-hover:text-gray-900'}`}>
                   <span>{language === "vi" ? "MUA PHÂN KHÚC" : "EXPLORE CATEGORY"}</span>
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -225,19 +253,19 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
             {/* Card 3: Gym Bags */}
             <div
               onClick={() => selectCollectionCategory("BAGS")}
-              className="group relative cursor-pointer overflow-hidden bg-zinc-950 border border-zinc-900/80 h-[178px] lg:h-auto transition-all flex flex-col justify-end p-6"
+              className={`group relative cursor-pointer overflow-hidden border h-[178px] lg:h-auto transition-all flex flex-col justify-end p-6 ${isDark ? 'bg-zinc-950 border-zinc-900/80' : 'bg-white border-gray-200 shadow-md'}`}
             >
-              <div className="absolute inset-0 bg-black/70 z-10 group-hover:bg-black/50 transition-all duration-300" />
+              <div className="absolute inset-0 bg-black/30 z-10 group-hover:bg-black/10 transition-all duration-300" />
               <img
                 src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=600"
                 alt="Gym Bags"
-                className="absolute inset-0 w-full h-full object-cover filter brightness-[0.25] contrast-[1.2] grayscale group-hover:scale-103 transition-transform duration-700"
+                className="absolute inset-0 w-full h-full object-cover filter brightness-[0.6] contrast-[1.2] grayscale group-hover:scale-103 transition-transform duration-700"
               />
               <div className="relative z-20 select-none">
-                <h3 className="font-anton text-2xl tracking-wider text-white uppercase mb-1">
+                <h3 className={`font-anton text-2xl tracking-wider uppercase mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   {language === "vi" ? "TÚI ĐỰNG ĐỒ TẬP" : "GYM BAGS"}
                 </h3>
-                <div className="flex items-center gap-2 text-zinc-400 font-mono text-[9px] font-bold uppercase tracking-[0.15em] group-hover:text-white transition-colors">
+                <div className={`flex items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.15em] transition-colors ${isDark ? 'text-zinc-400 group-hover:text-white' : 'text-gray-500 group-hover:text-gray-900'}`}>
                   <span>{language === "vi" ? "MUA PHÂN KHÚC" : "EXPLORE CATEGORY"}</span>
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -249,10 +277,10 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
 
       {/* 3. SEARCH & INTERACTIVE FILTER ROW */}
       <section id="acc-products-grid" className="max-w-7xl mx-auto px-6 md:px-16 pt-8 pb-12">
-        <div className="border-t border-b border-zinc-900 py-4 flex flex-col md:flex-row items-center justify-between gap-4 select-none">
+        <div className={`border-t border-b py-4 flex flex-col md:flex-row items-center justify-between gap-4 select-none ${isDark ? 'border-zinc-900' : 'border-gray-200'}`}>
           
           {/* Header count for visual realism */}
-          <div className="w-full md:w-auto text-left font-anton text-lg tracking-wider text-zinc-200">
+          <div className={`w-full md:w-auto text-left font-anton text-lg tracking-wider ${isDark ? 'text-zinc-200' : 'text-gray-900'}`}>
             {language === "vi" ? `TẤT CẢ PHỤ KIỆN (${filteredAndSortedProducts.length})` : `ALL ACCESSORIES (${filteredAndSortedProducts.length})`}
           </div>
 
@@ -264,12 +292,12 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={language === "vi" ? "TÌM KIẾM PHỤ KIỆN..." : "SEARCH ACCESSORIES..."}
-              className="bg-black hover:bg-zinc-950 focus:bg-zinc-950 w-full border border-zinc-900 px-4 py-2.5 pl-10 font-mono text-[11px] tracking-widest text-[#ececec] uppercase focus:outline-none focus:border-[#0066ff] placeholder:text-zinc-600 transition-all font-bold rounded-none"
+              className={`w-full border px-4 py-2.5 pl-10 font-mono text-[11px] tracking-widest uppercase focus:outline-none focus:border-[#0066ff] transition-all font-bold rounded-none ${isDark ? 'bg-black hover:bg-zinc-950 focus:bg-zinc-950 border-zinc-900 text-[#ececec] placeholder:text-zinc-600' : 'bg-white hover:bg-gray-50 focus:bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'}`}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white font-sans text-xs bg-zinc-900 px-1"
+                className={`absolute right-3 top-1/2 -translate-y-1/2 font-sans text-xs px-1 transition-colors ${isDark ? 'text-zinc-500 hover:text-white bg-zinc-900' : 'text-gray-400 hover:text-gray-900 bg-gray-100'}`}
               >
                 Clear
               </button>
@@ -283,14 +311,14 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("category")}
-                className="flex items-center gap-2 bg-black hover:bg-zinc-900 border border-zinc-900 px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none"
+                className={`flex items-center gap-2 border px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none ${isDark ? 'bg-black hover:bg-zinc-900 border-zinc-900 text-white' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'}`}
               >
                 <span>{language === "vi" ? "PHÂN LOẠI" : "CATEGORY"}: {selectedSubCategory}</span>
                 <ChevronDown className={`w-3 h-3 text-zinc-400 transition-transform ${activeDropdown === "category" ? "rotate-180" : ""}`} />
               </button>
 
               {activeDropdown === "category" && (
-                <div className="absolute right-0 mt-1 z-30 w-48 bg-zinc-950 border border-zinc-900 shadow-2xl uppercase font-mono text-[10px]">
+                <div className={`absolute right-0 mt-1 z-30 w-48 border shadow-2xl uppercase font-mono text-[10px] ${isDark ? 'bg-zinc-950 border-zinc-900' : 'bg-white border-gray-200'}`}>
                   {["ALL", "BELTS", "WRAPS", "BANDS", "BAGS", "STRAPS", "SLEEVES", "SHAKERS", "GLOVES"].map((cat) => (
                     <button
                       key={cat}
@@ -298,8 +326,10 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
                         setSelectedSubCategory(cat);
                         setActiveDropdown(null);
                       }}
-                      className={`w-full text-left px-4 py-2.5 border-b border-zinc-900 last:border-0 transition-colors ${
-                        selectedSubCategory === cat ? "text-[#0066ff] bg-zinc-900" : "text-zinc-400 hover:text-white"
+                      className={`w-full text-left px-4 py-2.5 border-b last:border-0 transition-colors ${
+                        isDark 
+                          ? (selectedSubCategory === cat ? "text-[#0066ff] bg-zinc-900 border-zinc-900" : "text-zinc-400 hover:text-white border-zinc-900")
+                          : (selectedSubCategory === cat ? "text-[#0066ff] bg-gray-50 border-gray-100" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-100")
                       }`}
                     >
                       {cat}
@@ -313,7 +343,7 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("price")}
-                className="flex items-center gap-2 bg-black hover:bg-zinc-900 border border-zinc-900 px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none"
+                className={`flex items-center gap-2 border px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none ${isDark ? 'bg-black hover:bg-zinc-900 border-zinc-900 text-white' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'}`}
               >
                 <span>
                   {language === "vi" ? "MỨC GIÁ" : "PRICE"}:{" "}
@@ -327,7 +357,7 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
               </button>
 
               {activeDropdown === "price" && (
-                <div className="absolute right-0 mt-1 z-30 w-48 bg-zinc-950 border border-zinc-900 shadow-2xl uppercase font-mono text-[10px]">
+                <div className={`absolute right-0 mt-1 z-30 w-48 border shadow-2xl uppercase font-mono text-[10px] ${isDark ? 'bg-zinc-950 border-zinc-900' : 'bg-white border-gray-200'}`}>
                   {[
                     { label: "ALL PRICES", value: "ALL" },
                     { label: "UNDER $40", value: "UNDER_40" },
@@ -339,8 +369,10 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
                         setPriceRange(pr.value);
                         setActiveDropdown(null);
                       }}
-                      className={`w-full text-left px-4 py-2.5 border-b border-zinc-900 last:border-0 transition-colors ${
-                        priceRange === pr.value ? "text-[#0066ff] bg-zinc-900" : "text-zinc-400 hover:text-white"
+                      className={`w-full text-left px-4 py-2.5 border-b last:border-0 transition-colors ${
+                        isDark 
+                          ? (priceRange === pr.value ? "text-[#0066ff] bg-zinc-900 border-zinc-900" : "text-zinc-400 hover:text-white border-zinc-900")
+                          : (priceRange === pr.value ? "text-[#0066ff] bg-gray-50 border-gray-100" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-100")
                       }`}
                     >
                       {pr.label}
@@ -354,7 +386,7 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("sort")}
-                className="flex items-center gap-2 bg-[#121415] hover:bg-zinc-900 border border-zinc-900 text-zinc-300 px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none"
+                className={`flex items-center gap-2 border px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none ${isDark ? 'bg-[#121415] hover:bg-zinc-900 border-zinc-900 text-zinc-300' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'}`}
               >
                 <SlidersHorizontal className="w-3 h-3 text-[#0066ff]" />
                 <span>{sortBy === "FEATURED" ? "SORT BY: FEATURED" : `SORT: ${sortBy.replace(/_/g, " ")}`}</span>
@@ -362,7 +394,7 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
               </button>
 
               {activeDropdown === "sort" && (
-                <div className="absolute right-0 mt-1 z-30 w-52 bg-zinc-950 border border-zinc-900 shadow-2xl uppercase font-mono text-[10px]">
+                <div className={`absolute right-0 mt-1 z-30 w-52 border shadow-2xl uppercase font-mono text-[10px] ${isDark ? 'bg-zinc-950 border-zinc-900' : 'bg-white border-gray-200'}`}>
                   {[
                     { label: "FEATURED BOLD", value: "FEATURED" },
                     { label: "NEWEST BATCH", value: "NEWEST" },
@@ -376,8 +408,10 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
                         setSortBy(item.value);
                         setActiveDropdown(null);
                       }}
-                      className={`w-full text-left px-4 py-2.5 border-b border-zinc-900 last:border-0 transition-colors ${
-                        sortBy === item.value ? "text-[#0066ff] bg-zinc-900" : "text-zinc-400 hover:text-white"
+                      className={`w-full text-left px-4 py-2.5 border-b last:border-0 transition-colors ${
+                        isDark 
+                          ? (sortBy === item.value ? "text-[#0066ff] bg-zinc-900 border-zinc-900" : "text-zinc-400 hover:text-white border-zinc-900")
+                          : (sortBy === item.value ? "text-[#0066ff] bg-gray-50 border-gray-100" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-100")
                       }`}
                     >
                       {item.label}
@@ -392,7 +426,7 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
 
         {/* Filter results counter */}
         {searchQuery || selectedSubCategory !== "ALL" || priceRange !== "ALL" || sortBy !== "FEATURED" ? (
-          <div className="mt-3 flex items-center justify-between text-zinc-500 font-mono text-[10px] tracking-widest bg-zinc-950 px-4 py-2 border border-zinc-900 uppercase">
+          <div className={`mt-3 flex items-center justify-between font-mono text-[10px] tracking-widest px-4 py-2 border uppercase ${isDark ? 'bg-zinc-950 border-zinc-900 text-zinc-500' : 'bg-gray-50 border-gray-200 text-gray-500'}`}>
             <span>
               {language === "vi"
                 ? `Tìm thấy ${filteredAndSortedProducts.length} phụ kiện rèn luyện`
@@ -416,9 +450,9 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
       {/* 4. PRODUCTS DISPLAY GRID */}
       <section className="max-w-7xl mx-auto px-6 md:px-16 pb-16">
         {filteredAndSortedProducts.length === 0 ? (
-          <div className="text-center py-24 bg-[#0e1011] border border-zinc-900 rounded-none">
-            <Ban className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
-            <p className="font-mono text-[11px] tracking-widest text-zinc-400 uppercase font-bold">
+          <div className={`text-center py-24 border rounded-none ${isDark ? 'bg-[#0e1011] border-zinc-900' : 'bg-gray-50 border-gray-200'}`}>
+            <Ban className={`w-12 h-12 mx-auto mb-4 ${isDark ? 'text-zinc-700' : 'text-gray-300'}`} />
+            <p className={`font-mono text-[11px] tracking-widest uppercase font-bold ${isDark ? 'text-zinc-400' : 'text-gray-500'}`}>
               {language === "vi"
                 ? "Không tìm thấy phụ kiện tập luyện nào phù hợp lựa chọn."
                 : "No matching training accessories found in roster."}
@@ -432,11 +466,13 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
                 <div
                   key={p.id}
                   onClick={() => onOpenQuickView(p.id)}
-                  className="group relative cursor-pointer bg-black/40 hover:bg-black border border-zinc-900 hover:border-[#0066ff]/40 transition-all duration-300 flex flex-col justify-between"
+                  className={`group relative cursor-pointer border transition-all duration-300 flex flex-col justify-between ${
+                    isDark ? 'bg-black/40 hover:bg-black border-zinc-900 hover:border-[#0066ff]/40' : 'bg-white hover:shadow-xl border-gray-100 hover:border-[#0066ff]/30'
+                  }`}
                   style={{ minHeight: "380px" }}
                 >
                   {/* Top Image & badges zone */}
-                  <div className="relative w-full aspect-square bg-[#101213] overflow-hidden flex items-center justify-center">
+                  <div className={`relative w-full aspect-square overflow-hidden flex items-center justify-center ${isDark ? 'bg-[#101213]' : 'bg-gray-100'}`}>
                     
                     {/* Grayscale styled nutrition image with subtle hover contrast boost */}
                     <img
@@ -448,7 +484,7 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
 
                     {/* Sold out overlay tag */}
                     {p.isSoldOut && (
-                      <div className="absolute top-4 left-4 z-10 bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-[9px] font-bold px-2 py-0.5 tracking-widest uppercase">
+                      <div className={`absolute top-4 left-4 z-10 border font-mono text-[9px] font-bold px-2 py-0.5 tracking-widest uppercase ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400' : 'bg-white border-gray-200 text-gray-500'}`}>
                         {language === "vi" ? "HẾT HÀNG" : "SOLD OUT"}
                       </div>
                     )}
@@ -467,18 +503,20 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
                     {/* Favorite Heart Icon Button */}
                     <button
                       onClick={(e) => toggleFavorite(p.id, e)}
-                      className="absolute top-4 right-4 z-10 bg-[#0c0f0f]/80 hover:bg-black hover:text-[#ff3355] text-zinc-400 p-2 border border-zinc-900 transition-all duration-200"
+                      className={`absolute top-4 right-4 z-10 p-2 border transition-all duration-200 ${
+                        isDark ? 'bg-[#0c0f0f]/80 hover:bg-black hover:text-[#ff3355] text-zinc-400 border-zinc-900' : 'bg-white/80 hover:bg-white text-gray-400 hover:text-[#ff3355] border-gray-200'
+                      }`}
                     >
                       <Heart
-                        className={`w-3.5 h-3.5 ${isFav ? "fill-[#ff3355] text-[#ff3355]" : "text-zinc-400"}`}
+                        className={`w-3.5 h-3.5 ${isFav ? "fill-[#ff3355] text-[#ff3355]" : ""}`}
                       />
                     </button>
 
                     {/* Quick view hover icon */}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-300">
-                      <div className="border border-white/20 p-3 bg-[#0c0f0f] flex items-center gap-2 hover:border-[#0066ff]">
+                      <div className={`border p-3 flex items-center gap-2 hover:border-[#0066ff] ${isDark ? 'bg-[#0c0f0f] border-white/20' : 'bg-white border-gray-200'}`}>
                         <Eye className="w-4 h-4 text-[#0066ff]" />
-                        <span className="font-montserrat text-[10px] font-bold tracking-widest uppercase text-white">
+                        <span className={`font-montserrat text-[10px] font-bold tracking-widest uppercase ${isDark ? 'text-white' : 'text-gray-900'}`}>
                           {language === "vi" ? "XEM NHANH" : "QUICK VIEW"}
                         </span>
                       </div>
@@ -491,13 +529,13 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
                       <span className="font-mono text-[9px] font-bold tracking-widest text-[#0066ff] uppercase block mb-1">
                         {p.category || "GEAR"}
                       </span>
-                      <h3 className="font-montserrat text-xs font-bold tracking-wider text-[#eaeaea] group-hover:text-white transition-colors uppercase leading-tight mb-2">
+                      <h3 className={`font-montserrat text-xs font-bold tracking-wider transition-colors uppercase leading-tight mb-2 ${isDark ? 'text-[#eaeaea] group-hover:text-white' : 'text-gray-800 group-hover:text-black'}`}>
                         {p.name}
                       </h3>
                     </div>
 
                     <div className="flex items-center justify-between mt-4">
-                      <span className="font-mono text-sm font-extrabold text-[#ffffff]">
+                      <span className={`font-mono text-sm font-extrabold ${isDark ? 'text-[#ffffff]' : 'text-gray-900'}`}>
                         {p.price}
                       </span>
 
@@ -505,7 +543,7 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
                       {p.isSoldOut ? (
                         <button
                           disabled
-                          className="bg-zinc-950 border border-zinc-900 text-zinc-700 p-2 rounded-full cursor-not-allowed"
+                          className={`border p-2 rounded-full cursor-not-allowed ${isDark ? 'bg-zinc-950 border-zinc-900 text-zinc-700' : 'bg-gray-100 border-gray-200 text-gray-400'}`}
                           title="Temporarily unavailable"
                         >
                           <Ban className="w-3.5 h-3.5" />
@@ -513,7 +551,9 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
                       ) : (
                         <button
                           onClick={(e) => handleQuickAdd(p, e)}
-                          className="bg-black hover:bg-[#0066ff] hover:text-white text-zinc-300 border border-zinc-900 hover:border-[#0066ff] p-2 rounded-full transition-all duration-200 cursor-pointer shadow-md shadow-black/40"
+                          className={`hover:bg-[#0066ff] hover:text-white border hover:border-[#0066ff] p-2 rounded-full transition-all duration-200 cursor-pointer shadow-md ${
+                            isDark ? 'bg-black text-zinc-300 border-zinc-900 shadow-black/40' : 'bg-white text-gray-700 border-gray-200 shadow-gray-200/50'
+                          }`}
                           title="Add to training configuration"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -537,7 +577,9 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
                   : "All current active athletic laboratory products are loaded."
               );
             }}
-            className="border border-[#424656]/50 hover:border-[#0066ff] bg-black hover:bg-[#0066ff]/5 text-zinc-300 hover:text-white font-montserrat text-[10px] font-extrabold tracking-[0.25em] py-3.5 px-10 transition-all uppercase rounded-none"
+            className={`border hover:border-[#0066ff] hover:bg-[#0066ff]/5 font-montserrat text-[10px] font-extrabold tracking-[0.25em] py-3.5 px-10 transition-all uppercase rounded-none ${
+              isDark ? 'border-[#424656]/50 bg-black text-zinc-300 hover:text-white' : 'border-gray-300 bg-white text-gray-600 hover:text-gray-900'
+            }`}
           >
             {language === "vi" ? "HIỂN THỊ THÊM SẢN PHẨM" : "LOAD MORE PRODUCTS"}
           </button>
@@ -545,13 +587,13 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
       </section>
 
       {/* 6. TECHNICAL ADVOCACY BANNER */}
-      <section className="relative overflow-hidden w-full bg-[#121414] border-t border-b border-zinc-900 py-20">
+      <section className={`relative overflow-hidden w-full border-t border-b py-20 ${isDark ? 'bg-[#121414] border-zinc-900' : 'bg-gray-100 border-gray-200'}`}>
         <div className="max-w-7xl mx-auto px-6 md:px-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="select-none flex flex-col items-start text-left">
-            <h2 className="font-anton text-4xl sm:text-5xl tracking-widest text-white leading-tight uppercase mb-6">
+            <h2 className={`font-anton text-4xl sm:text-5xl tracking-widest leading-tight uppercase mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
               {language === "vi" ? "THIẾT KẾ BỞI VẬN ĐỘNG VIÊN." : "DESIGNED BY ATHLETES."}
             </h2>
-            <p className="font-montserrat text-xs sm:text-sm text-zinc-400 leading-relaxed tracking-wider mb-8">
+            <p className={`font-montserrat text-xs sm:text-sm leading-relaxed tracking-wider mb-8 ${isDark ? 'text-zinc-400' : 'text-gray-600'}`}>
               {language === "vi"
                 ? "Chúng tôi không sản xuất trang thiết bị dành cho những người tập luyện hời hợt. Từng mũi khâu, khóa kim loại và dây đai đều được hiệu chỉnh tối ưu cho khả năng chịu lực cực hạn. Đã kiểm nghiệm trong các môi trường khắc nghiệt nhất bởi các elite powerlifter và vận động viên thể chất ưu tú nhất."
                 : "We don't build gear for the casual gym-goer. Every stitch, buckle, and strap is engineered for maximum load and durability. Tested in the harshest environments by elite powerlifters and strength athletes."}
@@ -571,21 +613,21 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
             </button>
           </div>
 
-          <div className="relative h-[300px] md:h-[400px] w-full overflow-hidden border border-zinc-900">
+          <div className={`relative h-[300px] md:h-[400px] w-full overflow-hidden border ${isDark ? 'border-zinc-900' : 'border-gray-200'}`}>
             <img
               src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1000&auto=format&fit=crop"
               alt="Elite performance powerlifter lifting heavy load barbell"
               className="w-full h-full object-cover filter brightness-[0.4] contrast-[1.1] grayscale hover:scale-103 transition-transform duration-700"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none" />
+            <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-black via-transparent' : 'from-white via-transparent'} to-transparent pointer-events-none`} />
           </div>
         </div>
       </section>
 
       {/* 7. EXPLORE MORE LINKS SECTIONS */}
-      <section className="bg-black py-20 px-6 md:px-16 select-none">
+      <section className={`py-20 px-6 md:px-16 select-none ${isDark ? 'bg-black' : 'bg-white border-b border-gray-200'}`}>
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="font-anton text-2xl tracking-widest text-white uppercase mb-12">
+          <h2 className={`font-anton text-2xl tracking-widest uppercase mb-12 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             {language === "vi" ? "KHÁM PHÁ THÊM" : "EXPLORE MORE"}
           </h2>
 
@@ -593,10 +635,10 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
             {/* Link 1: Men's Apparel */}
             <div
               onClick={() => onNavigate?.("/men")}
-              className="group relative cursor-pointer overflow-hidden bg-zinc-950 border border-zinc-900/80 h-[150px] transition-all flex flex-col items-center justify-center p-6 hover:border-[#0066ff]/40"
+              className={`group relative cursor-pointer overflow-hidden border h-[150px] transition-all flex flex-col items-center justify-center p-6 hover:border-[#0066ff]/40 ${isDark ? 'bg-zinc-950 border-zinc-900/80' : 'bg-gray-50 border-gray-200'}`}
             >
-              <Mars className="w-6 h-6 text-zinc-500 mb-3 group-hover:text-[#0066ff] transition-colors" />
-              <h3 className="font-anton text-lg tracking-wider text-white uppercase mb-1 group-hover:text-white/90">
+              <Mars className={`w-6 h-6 mb-3 group-hover:text-[#0066ff] transition-colors ${isDark ? 'text-zinc-500' : 'text-gray-400'}`} />
+              <h3 className={`font-anton text-lg tracking-wider uppercase mb-1 ${isDark ? 'text-white group-hover:text-white/90' : 'text-gray-900 group-hover:text-[#0066ff]'}`}>
                 {language === "vi" ? "TRANG PHỤC NAM" : "MEN'S APPAREL"}
               </h3>
             </div>
@@ -604,10 +646,10 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
             {/* Link 2: Women's Apparel */}
             <div
               onClick={() => onNavigate?.("/women")}
-              className="group relative cursor-pointer overflow-hidden bg-zinc-950 border border-zinc-900/80 h-[150px] transition-all flex flex-col items-center justify-center p-6 hover:border-[#0066ff]/40"
+              className={`group relative cursor-pointer overflow-hidden border h-[150px] transition-all flex flex-col items-center justify-center p-6 hover:border-[#0066ff]/40 ${isDark ? 'bg-zinc-950 border-zinc-900/80' : 'bg-gray-50 border-gray-200'}`}
             >
-              <Venus className="w-6 h-6 text-zinc-500 mb-3 group-hover:text-[#0066ff] transition-colors" />
-              <h3 className="font-anton text-lg tracking-wider text-white uppercase mb-1 group-hover:text-white/90">
+              <Venus className={`w-6 h-6 mb-3 group-hover:text-[#0066ff] transition-colors ${isDark ? 'text-zinc-500' : 'text-gray-400'}`} />
+              <h3 className={`font-anton text-lg tracking-wider uppercase mb-1 ${isDark ? 'text-white group-hover:text-white/90' : 'text-gray-900 group-hover:text-[#0066ff]'}`}>
                 {language === "vi" ? "TRANG PHỤC NỮ" : "WOMEN'S APPAREL"}
               </h3>
             </div>
@@ -615,10 +657,10 @@ export default function AccessoriesPage({ onOpenQuickView, onAddToCart, onNaviga
             {/* Link 3: Supplements */}
             <div
               onClick={() => onNavigate?.("/supplements")}
-              className="group relative cursor-pointer overflow-hidden bg-zinc-950 border border-zinc-900/80 h-[150px] transition-all flex flex-col items-center justify-center p-6 hover:border-[#0066ff]/40"
+              className={`group relative cursor-pointer overflow-hidden border h-[150px] transition-all flex flex-col items-center justify-center p-6 hover:border-[#0066ff]/40 ${isDark ? 'bg-zinc-950 border-zinc-900/80' : 'bg-gray-50 border-gray-200'}`}
             >
-              <Pill className="w-6 h-6 text-zinc-500 mb-3 group-hover:text-[#0066ff] transition-colors" />
-              <h3 className="font-anton text-lg tracking-wider text-white uppercase mb-1 group-hover:text-white/90">
+              <Pill className={`w-6 h-6 mb-3 group-hover:text-[#0066ff] transition-colors ${isDark ? 'text-zinc-500' : 'text-gray-400'}`} />
+              <h3 className={`font-anton text-lg tracking-wider uppercase mb-1 ${isDark ? 'text-white group-hover:text-white/90' : 'text-gray-900 group-hover:text-[#0066ff]'}`}>
                 {language === "vi" ? "THỰC PHẨM BỔ SUNG" : "SUPPLEMENTS"}
               </h3>
             </div>

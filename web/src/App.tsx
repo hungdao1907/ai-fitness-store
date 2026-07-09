@@ -71,6 +71,18 @@ export default function App() {
 
   // Floating Chatbot window open/close state
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [initialChatPrompt, setInitialChatPrompt] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleOpenChat = (e: any) => {
+      if (e.detail?.prompt) {
+        setInitialChatPrompt(e.detail.prompt);
+      }
+      setIsChatOpen(true);
+    };
+    window.addEventListener("open-ai-chat", handleOpenChat);
+    return () => window.removeEventListener("open-ai-chat", handleOpenChat);
+  }, []);
 
   const showToast = (message: string, isError = false) => {
     setToast({ message, isError });
@@ -297,7 +309,12 @@ export default function App() {
       {/* Reusable ChatbotModal fixed bottom-right with smooth exit transitions */}
       <AnimatePresence>
         {isChatOpen && (
-          <ChatbotModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+          <ChatbotModal 
+            isOpen={isChatOpen} 
+            onClose={() => setIsChatOpen(false)} 
+            initialMessage={initialChatPrompt}
+            onInitialMessageSent={() => setInitialChatPrompt(null)}
+          />
         )}
       </AnimatePresence>
 

@@ -13,7 +13,36 @@ const ProductContext = createContext<ProductContextType>({
 });
 
 export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>(FALLBACK_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>(() => {
+    try {
+      const saved = localStorage.getItem('hf_products');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.map((p: any) => {
+          const fallback = FALLBACK_PRODUCTS.find(f => f.id === p.id);
+          return {
+            id: p.id,
+            name: p.name,
+            price: `$${Number(p.price).toFixed(2)}`,
+            priceNum: p.price,
+            image: p.image || (fallback ? fallback.image : 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=300'),
+            category: p.category,
+            description: p.description,
+            badge: p.status === 'Active' ? undefined : (p.status === 'Low Stock' ? 'LOW STOCK' : 'OUT OF STOCK'),
+            details: [],
+            specs: {
+              material: "Premium Material",
+              fit: "Athletic Fit",
+              care: "Standard Care"
+            }
+          };
+        });
+      }
+    } catch (e) {
+      console.warn("Failed to load storefront cache", e);
+    }
+    return FALLBACK_PRODUCTS;
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,6 +69,13 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
             }
           }));
           setProducts(mappedData);
+          
+          try {
+            // Save raw data to cache for Admin and Storefront to share
+            localStorage.setItem('hf_products', JSON.stringify(data));
+          } catch(e) {
+            console.warn("Failed to cache storefront products", e);
+          }
         }
       } catch (err) {
         console.error("Failed to fetch products:", err);

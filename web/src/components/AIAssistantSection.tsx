@@ -33,36 +33,15 @@ export default function AIAssistantSection({ onOpenQuickView }: AIAssistantSecti
 
   const handleQuery = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setAdviceData(null);
-    setErrorMsg(null);
+    
+    // Construct the prompt based on the selections
+    const promptMsg = language === "vi" 
+      ? `Xin chào AI, môn thể thao chính của tôi là: ${discipline}. Cấp độ huấn luyện: ${experience}. ${customGoal ? `Mục tiêu chi tiết: ${customGoal}.` : ''} Bạn có thể tư vấn thiết bị cho tôi không?`
+      : `Hello AI, my main sport is: ${discipline}. My training level is: ${experience}. ${customGoal ? `Detailed goals: ${customGoal}.` : ''} Could you recommend suitable gear for me?`;
 
-    try {
-      const res = await fetch("/api/recommendations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          discipline,
-          experience,
-          goal: "optimize performance output",
-          customMessage: customGoal,
-        }),
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        setAdviceData(data.advice);
-      } else {
-        setErrorMsg("Failed to query recommendation systems.");
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMsg("Connection timeout. Please check your local network connection.");
-    } finally {
-      setLoading(false);
-    }
+    // Dispatch custom event to trigger the main ChatbotModal in App.tsx
+    const event = new CustomEvent("open-ai-chat", { detail: { prompt: promptMsg } });
+    window.dispatchEvent(event);
   };
 
   const handleReset = () => {

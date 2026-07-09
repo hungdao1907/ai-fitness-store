@@ -14,7 +14,8 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Initialize Gemini client lazily to avoid crashing on start if the key is missing
 let aiClient: GoogleGenAI | null = null;
@@ -162,7 +163,7 @@ app.post("/api/chat", async (req, res) => {
   const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
   const chatInput = lastUserMessage ? lastUserMessage.content : "";
 
-  const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL || "https://bend-cited-wrestling-myspace.trycloudflare.com/webhook/82b2b63b-d3c0-4ea8-9edb-1ec5bc85d67a";
+  const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL || "https://vancouver-opens-outer-burlington.trycloudflare.com/webhook/d4b76ec9-f9fc-475d-b835-b4d479d35849";
 
   try {
     const response = await fetch(n8nWebhookUrl, {
@@ -839,6 +840,7 @@ async function seedDatabase() {
 import { apiRouter } from './server/routes/api.js';
 import { setupSwagger } from './server/swagger.js';
 
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 app.use('/api', apiRouter);
 setupSwagger(app);
 

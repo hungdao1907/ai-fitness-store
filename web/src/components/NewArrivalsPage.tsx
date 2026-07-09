@@ -3,6 +3,7 @@ import { SlidersHorizontal, Plus, ShoppingCart, Zap, Eye, ChevronDown, Check, X 
 import { Product, CartItem } from "../types";
 import { useProducts } from "../context/ProductContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useTheme } from "../context/ThemeContext";
 import { motion, AnimatePresence } from "motion/react";
 
 interface NewArrivalsPageProps {
@@ -14,6 +15,7 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
   const { products: PRODUCTS } = useProducts();
 
   const { language, t } = useLanguage();
+  const { isDark } = useTheme();
 
   // Filter & Sort States
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
@@ -142,7 +144,7 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
   const tacticalPack = useMemo(() => newProducts.find((p) => p.id === "new-tactical-pack"), [newProducts]);
 
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className={`min-h-screen transition-colors ${isDark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'}`}>
       {/* Header / Hero Section */}
       <div className="relative h-[450px] md:h-[550px] flex items-center justify-center overflow-hidden border-b border-[#424656]/20">
         <div className="absolute inset-0 z-0">
@@ -167,7 +169,7 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="font-anton text-4xl sm:text-6xl md:text-7xl tracking-tight uppercase leading-none mb-6 text-white"
+            className={`font-anton text-4xl sm:text-6xl md:text-7xl tracking-tight uppercase leading-none mb-6 ${isDark ? 'text-white' : 'text-gray-50'}`}
           >
             {language === "vi" ? "THIẾT BỊ HIỆU NĂNG THẾ HỆ MỚI" : "THE LATEST IN PERFORMANCE"}
           </motion.h1>
@@ -184,7 +186,7 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-12">
         
         {/* Filter and Sort Sub-Navbar Controls */}
-        <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center border-b border-white/10 pb-8 mb-12">
+        <div className={`flex flex-col md:flex-row gap-6 justify-between items-start md:items-center border-b pb-8 mb-12 ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
           
           {/* Left: Category Filters */}
           <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -200,9 +202,9 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                   key={cat.value}
                   onClick={() => setSelectedCategory(cat.value)}
                   className={`px-5 py-2.5 font-mono text-[10px] tracking-widest uppercase transition-all duration-300 border ${
-                    isActive
-                      ? "bg-white text-black border-white font-bold"
-                      : "bg-transparent text-white/60 border-white/15 hover:text-white hover:border-white/40"
+                    isDark
+                      ? (isActive ? "bg-white text-black border-white font-bold" : "bg-transparent text-white/60 border-white/15 hover:text-white hover:border-white/40")
+                      : (isActive ? "bg-gray-900 text-white border-gray-900 font-bold" : "bg-transparent text-gray-500 border-gray-300 hover:text-gray-900 hover:border-gray-500")
                   }`}
                 >
                   {cat.label}
@@ -216,7 +218,9 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
             <div className="relative">
               <button
                 onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
-                className="flex items-center gap-3 bg-black border border-white/15 hover:border-white/40 px-5 py-2.5 text-white font-mono text-[10px] tracking-widest uppercase"
+                className={`flex items-center gap-3 border px-5 py-2.5 font-mono text-[10px] tracking-widest uppercase transition-colors ${
+                  isDark ? 'bg-black border-white/15 hover:border-white/40 text-white' : 'bg-white border-gray-300 hover:border-gray-500 text-gray-900'
+                }`}
               >
                 <span>
                   {language === "vi" ? "SẮP XẾP: " : "SORT BY: "}
@@ -237,7 +241,9 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 5 }}
-                      className="absolute right-0 mt-1.5 w-60 bg-[#121414] border border-white/20 shadow-2xl z-20 font-mono text-[10px] tracking-widest uppercase"
+                      className={`absolute right-0 mt-1.5 w-60 border shadow-2xl z-20 font-mono text-[10px] tracking-widest uppercase ${
+                        isDark ? 'bg-[#121414] border-white/20' : 'bg-white border-gray-200'
+                      }`}
                     >
                       {[
                         { label: language === "vi" ? "MỚI NHẤT" : "NEWEST", value: "NEWEST" },
@@ -250,8 +256,10 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                             setSortBy(item.value);
                             setIsSortDropdownOpen(false);
                           }}
-                          className={`w-full text-left px-5 py-3 hover:bg-[#0066ff]/10 hover:text-white transition-colors flex items-center justify-between ${
-                            sortBy === item.value ? "text-[#0066ff] font-bold" : "text-white/70"
+                          className={`w-full text-left px-5 py-3 transition-colors flex items-center justify-between ${
+                            isDark
+                              ? (sortBy === item.value ? "text-[#0066ff] font-bold hover:bg-[#0066ff]/10 hover:text-white" : "text-white/70 hover:bg-[#0066ff]/10 hover:text-white")
+                              : (sortBy === item.value ? "text-[#0066ff] font-bold bg-gray-50" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900")
                           }`}
                         >
                           <span>{item.label}</span>
@@ -266,7 +274,9 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
 
             <button
               onClick={() => setSelectedCategory("ALL")}
-              className="p-2.5 border border-white/15 text-white/60 hover:text-white hover:border-white/40 bg-black transition-colors"
+              className={`p-2.5 border transition-colors ${
+                isDark ? 'border-white/15 text-white/60 hover:text-white hover:border-white/40 bg-black' : 'border-gray-300 text-gray-500 hover:text-gray-900 hover:border-gray-500 bg-white'
+              }`}
               title={language === "vi" ? "Đặt lại bộ lọc" : "Reset Filters"}
             >
               <SlidersHorizontal size={14} />
@@ -287,16 +297,18 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className="group relative bg-[#0d0e10] border border-white/10 overflow-hidden flex flex-col justify-between h-[650px] md:h-auto min-h-[600px] lg:col-span-1"
+                className={`group relative border overflow-hidden flex flex-col justify-between h-[650px] md:h-auto min-h-[600px] lg:col-span-1 ${
+                  isDark ? 'bg-[#0d0e10] border-white/10' : 'bg-white border-gray-200'
+                }`}
               >
                 {/* Image Background */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
                   <img
                     src={aeroKnit.image}
                     alt={aeroKnit.name}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-60 group-hover:opacity-80 filter contrast-[1.1]"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100 filter contrast-[1.1]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                  <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-black via-black/30' : 'from-black/80 via-transparent'} to-transparent`} />
                 </div>
 
                 {/* Top Badge Overlay */}
@@ -315,9 +327,9 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                 </div>
 
                 {/* Bottom Details Overlay */}
-                <div className="relative z-10 p-8 pt-24 bg-gradient-to-t from-black via-black/80 to-transparent">
+                <div className="relative z-10 p-8 pt-24 bg-gradient-to-t from-black via-black/80 to-transparent text-white">
                   <p className="font-mono text-[9px] text-[#0066ff] tracking-widest uppercase mb-1">{aeroKnit.category}</p>
-                  <h3 className="font-anton text-2xl sm:text-3xl tracking-wide uppercase text-white group-hover:text-[#0066ff] transition-colors mb-2">
+                  <h3 className="font-anton text-2xl sm:text-3xl tracking-wide uppercase group-hover:text-[#0066ff] transition-colors mb-2">
                     {aeroKnit.name}
                   </h3>
                   <p className="font-montserrat text-xs text-white/70 max-w-sm mb-6 leading-relaxed">
@@ -350,16 +362,18 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.1 }}
-                  className="group relative bg-[#0d0e10] border border-white/10 overflow-hidden flex flex-col justify-between h-[286px] sm:h-[310px]"
+                  className={`group relative border overflow-hidden flex flex-col justify-between h-[286px] sm:h-[310px] ${
+                    isDark ? 'bg-[#0d0e10] border-white/10' : 'bg-white border-gray-200'
+                  }`}
                 >
                   {/* Image Background */}
                   <div className="absolute inset-0 z-0 overflow-hidden">
                     <img
                       src={velocity.image}
                       alt={velocity.name}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-60 group-hover:opacity-80 filter contrast-[1.1]"
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100 filter contrast-[1.1]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-black via-black/50' : 'from-black/80 via-transparent'} to-transparent`} />
                   </div>
 
                   {/* Badge */}
@@ -376,9 +390,9 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                   </div>
 
                   {/* Bottom details */}
-                  <div className="relative z-10 p-6 pt-12 bg-gradient-to-t from-black via-black/80 to-transparent">
+                  <div className="relative z-10 p-6 pt-12 bg-gradient-to-t from-black via-black/80 to-transparent text-white">
                     <p className="font-mono text-[8px] text-[#0066ff] tracking-widest uppercase mb-0.5">{velocity.category}</p>
-                    <h3 className="font-anton text-lg tracking-wide uppercase text-white group-hover:text-[#0066ff] transition-colors mb-1">
+                    <h3 className="font-anton text-lg tracking-wide uppercase group-hover:text-[#0066ff] transition-colors mb-1">
                       {velocity.name}
                     </h3>
                     <div className="flex items-center justify-between mt-3">
@@ -401,16 +415,18 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className="group relative bg-[#0d0e10] border border-white/10 overflow-hidden flex flex-col justify-between h-[286px] sm:h-[310px]"
+                  className={`group relative border overflow-hidden flex flex-col justify-between h-[286px] sm:h-[310px] ${
+                    isDark ? 'bg-[#0d0e10] border-white/10' : 'bg-white border-gray-200'
+                  }`}
                 >
                   {/* Image Background */}
                   <div className="absolute inset-0 z-0 overflow-hidden">
                     <img
                       src={eliteWraps.image}
                       alt={eliteWraps.name}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-60 group-hover:opacity-80 filter contrast-[1.1]"
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100 filter contrast-[1.1]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-black via-black/50' : 'from-black/80 via-transparent'} to-transparent`} />
                   </div>
 
                   {/* Badge (None or normal) */}
@@ -424,9 +440,9 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                   </div>
 
                   {/* Bottom details */}
-                  <div className="relative z-10 p-6 pt-12 bg-gradient-to-t from-black via-black/80 to-transparent">
+                  <div className="relative z-10 p-6 pt-12 bg-gradient-to-t from-black via-black/80 to-transparent text-white">
                     <p className="font-mono text-[8px] text-[#0066ff] tracking-widest uppercase mb-0.5">{eliteWraps.category}</p>
-                    <h3 className="font-anton text-lg tracking-wide uppercase text-white group-hover:text-[#0066ff] transition-colors mb-1">
+                    <h3 className="font-anton text-lg tracking-wide uppercase group-hover:text-[#0066ff] transition-colors mb-1">
                       {eliteWraps.name}
                     </h3>
                     <div className="flex items-center justify-between mt-3">
@@ -454,16 +470,18 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.15 }}
-                  className="group relative bg-[#0d0e10] border border-white/10 overflow-hidden flex flex-col justify-between h-[286px] sm:h-[310px]"
+                  className={`group relative border overflow-hidden flex flex-col justify-between h-[286px] sm:h-[310px] ${
+                    isDark ? 'bg-[#0d0e10] border-white/10' : 'bg-white border-gray-200'
+                  }`}
                 >
                   {/* Image Background */}
                   <div className="absolute inset-0 z-0 overflow-hidden">
                     <img
                       src={hydration.image}
                       alt={hydration.name}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-60 group-hover:opacity-80 filter contrast-[1.1]"
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100 filter contrast-[1.1]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-black via-black/50' : 'from-black/80 via-transparent'} to-transparent`} />
                   </div>
 
                   {/* Badge */}
@@ -477,9 +495,9 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                   </div>
 
                   {/* Bottom details */}
-                  <div className="relative z-10 p-6 pt-12 bg-gradient-to-t from-black via-black/80 to-transparent">
+                  <div className="relative z-10 p-6 pt-12 bg-gradient-to-t from-black via-black/80 to-transparent text-white">
                     <p className="font-mono text-[8px] text-[#0066ff] tracking-widest uppercase mb-0.5">{hydration.category}</p>
-                    <h3 className="font-anton text-lg tracking-wide uppercase text-white group-hover:text-[#0066ff] transition-colors mb-1">
+                    <h3 className="font-anton text-lg tracking-wide uppercase group-hover:text-[#0066ff] transition-colors mb-1">
                       {hydration.name}
                     </h3>
                     <div className="flex items-center justify-between mt-3">
@@ -502,16 +520,18 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.25 }}
-                  className="group relative bg-[#0d0e10] border border-white/10 overflow-hidden flex flex-col justify-between h-[286px] sm:h-[310px]"
+                  className={`group relative border overflow-hidden flex flex-col justify-between h-[286px] sm:h-[310px] ${
+                    isDark ? 'bg-[#0d0e10] border-white/10' : 'bg-white border-gray-200'
+                  }`}
                 >
                   {/* Image Background */}
                   <div className="absolute inset-0 z-0 overflow-hidden">
                     <img
                       src={tacticalPack.image}
                       alt={tacticalPack.name}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-60 group-hover:opacity-80 filter contrast-[1.1]"
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100 filter contrast-[1.1]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-black via-black/50' : 'from-black/80 via-transparent'} to-transparent`} />
                   </div>
 
                   {/* Badge */}
@@ -528,9 +548,9 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                   </div>
 
                   {/* Bottom details */}
-                  <div className="relative z-10 p-6 pt-12 bg-gradient-to-t from-black via-black/80 to-transparent">
+                  <div className="relative z-10 p-6 pt-12 bg-gradient-to-t from-black via-black/80 to-transparent text-white">
                     <p className="font-mono text-[8px] text-[#0066ff] tracking-widest uppercase mb-0.5">{tacticalPack.category}</p>
-                    <h3 className="font-anton text-lg tracking-wide uppercase text-white group-hover:text-[#0066ff] transition-colors mb-1">
+                    <h3 className="font-anton text-lg tracking-wide uppercase group-hover:text-[#0066ff] transition-colors mb-1">
                       {tacticalPack.name}
                     </h3>
                     <div className="flex items-center justify-between mt-3">
@@ -564,16 +584,18 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.4, delay: index * 0.05 }}
-                    className="group relative bg-[#0d0e10] border border-white/10 overflow-hidden flex flex-col justify-between h-[420px] shadow-xl hover:shadow-2xl hover:border-white/20 transition-all duration-300"
+                    className={`group relative border overflow-hidden flex flex-col justify-between h-[420px] shadow-xl hover:shadow-2xl hover:border-white/20 transition-all duration-300 ${
+                      isDark ? 'bg-[#0d0e10] border-white/10' : 'bg-white border-gray-200'
+                    }`}
                   >
                     {/* Image Area */}
                     <div className="absolute inset-0 z-0 overflow-hidden">
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-55 group-hover:opacity-75 filter contrast-[1.05]"
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100 filter contrast-[1.05]"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                      <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-black via-black/40' : 'from-black/70 via-transparent'} to-transparent`} />
                     </div>
 
                     {/* Top action flags */}
@@ -597,12 +619,12 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                     </div>
 
                     {/* Content Details Block */}
-                    <div className="relative z-10 p-6 pt-24 bg-gradient-to-t from-black via-black/90 to-transparent mt-auto">
+                    <div className="relative z-10 p-6 pt-24 bg-gradient-to-t from-black via-black/90 to-transparent mt-auto text-white">
                       <p className="font-mono text-[8px] text-[#0066ff] tracking-widest uppercase mb-1">{product.category}</p>
-                      <h3 className="font-anton text-xl tracking-wide uppercase text-white group-hover:text-[#0066ff] transition-colors mb-2">
+                      <h3 className="font-anton text-xl tracking-wide uppercase group-hover:text-[#0066ff] transition-colors mb-2">
                         {product.name}
                       </h3>
-                      <p className="font-montserrat text-[11px] text-white/60 mb-5 line-clamp-2">
+                      <p className="font-montserrat text-[11px] text-white/70 mb-5 line-clamp-2">
                         {product.description}
                       </p>
 
@@ -648,11 +670,11 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
 
         {/* Empty Search Results */}
         {filteredAndSortedProducts.length === 0 && (
-          <div className="text-center py-24 border border-dashed border-white/10 bg-[#0d0e10]/30">
-            <p className="font-mono text-xs tracking-widest text-white/45 uppercase mb-2">
+          <div className={`text-center py-24 border border-dashed ${isDark ? 'border-white/10 bg-[#0d0e10]/30' : 'border-gray-300 bg-gray-50'}`}>
+            <p className={`font-mono text-xs tracking-widest uppercase mb-2 ${isDark ? 'text-white/45' : 'text-gray-500'}`}>
               {language === "vi" ? "KHÔNG TÌM THẤY SẢN PHẨM PHÙ HỢP" : "NO PRODUCTS MATCHED"}
             </p>
-            <p className="font-montserrat text-xs text-white/30">
+            <p className={`font-montserrat text-xs ${isDark ? 'text-white/30' : 'text-gray-400'}`}>
               {language === "vi" ? "Hãy thử thay đổi danh mục lọc hoặc sắp xếp." : "Try changing filter tags or sort options."}
             </p>
           </div>
@@ -664,7 +686,9 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
             <button
               onClick={handleLoadMore}
               disabled={isLoadingMore}
-              className="px-12 py-4 border border-white/20 hover:border-white/60 bg-transparent text-white font-mono text-[11px] tracking-[0.25em] uppercase transition-all duration-300 disabled:opacity-50 hover:bg-white/5 min-w-[280px]"
+              className={`px-12 py-4 border font-mono text-[11px] tracking-[0.25em] uppercase transition-all duration-300 disabled:opacity-50 min-w-[280px] ${
+                isDark ? 'border-white/20 hover:border-white/60 bg-transparent text-white hover:bg-white/5' : 'border-gray-300 hover:border-gray-900 bg-white text-gray-900 hover:bg-gray-50'
+              }`}
             >
               {isLoadingMore ? (
                 <div className="flex items-center justify-center gap-2">
@@ -681,20 +705,20 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
       </div>
 
       {/* Aero-space textile Spec showcase Block (Styled beautifully as specified) */}
-      <div className="bg-[#0b0c0e] border-t border-b border-white/10 py-24 relative overflow-hidden">
+      <div className={`border-t border-b py-24 relative overflow-hidden ${isDark ? 'bg-[#0b0c0e] border-white/10' : 'bg-gray-100 border-gray-200'}`}>
         {/* Subtle grid background pattern */}
-        <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        <div className={`absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none ${isDark ? '' : 'invert'}`} />
         
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full border border-white/20 mb-6 bg-black">
             <Zap className="text-[#0066ff] fill-[#0066ff]/20" size={20} />
           </div>
           
-          <h2 className="font-anton text-2xl sm:text-4xl tracking-wider uppercase mb-4 text-white">
+          <h2 className={`font-anton text-2xl sm:text-4xl tracking-wider uppercase mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             {language === "vi" ? "THIẾT KẾ CHO SỰ KIÊN ĐỊNH CHUYÊN NGHIỆP" : "ENGINEERED FOR THE UNCOMPROMISING"}
           </h2>
           
-          <p className="font-montserrat text-xs sm:text-sm text-white/60 leading-relaxed max-w-2xl mx-auto mb-10">
+          <p className={`font-montserrat text-xs sm:text-sm leading-relaxed max-w-2xl mx-auto mb-10 ${isDark ? 'text-white/60' : 'text-gray-600'}`}>
             {language === "vi"
               ? "Bộ sưu tập mới nhất của chúng tôi sử dụng công nghệ dệt may cấp hàng không vũ trụ để mang lại độ bền chưa từng có và khả năng kiểm soát thân nhiệt ổn định trong suốt quá trình tập luyện ở cường độ khắc nghiệt nhất."
               : "Our latest collection utilizes aerospace-grade textiles to deliver unprecedented durability and thermal regulation during extreme physical output."}
@@ -727,27 +751,29 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative bg-[#0d0e10] border border-white/15 w-full max-w-2xl p-6 sm:p-10 text-left z-10 shadow-2xl overflow-y-auto max-h-[85vh]"
+              className={`relative border w-full max-w-2xl p-6 sm:p-10 text-left z-10 shadow-2xl overflow-y-auto max-h-[85vh] ${
+                isDark ? 'bg-[#0d0e10] border-white/15' : 'bg-white border-gray-200'
+              }`}
             >
               <button
                 onClick={() => setIsSpecsModalOpen(false)}
-                className="absolute top-5 right-5 text-white/50 hover:text-white transition-colors"
+                className={`absolute top-5 right-5 transition-colors ${isDark ? 'text-white/50 hover:text-white' : 'text-gray-400 hover:text-gray-900'}`}
               >
                 <X size={18} />
               </button>
 
-              <div className="border-b border-white/10 pb-5 mb-6">
+              <div className={`border-b pb-5 mb-6 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
                 <span className="font-mono text-[9px] text-[#0066ff] tracking-widest uppercase font-bold">
                   {language === "vi" ? "PHIẾU THÔNG SỐ CÔNG NGHỆ" : "TECHNICAL SPECIFICATION SHEET"}
                 </span>
-                <h3 className="font-anton text-2xl sm:text-3xl tracking-wide uppercase text-white mt-1">
+                <h3 className={`font-anton text-2xl sm:text-3xl tracking-wide uppercase mt-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   {language === "vi" ? "VẬT LIỆU CAO CẤP HÀNG KHÔNG VŨ TRỤ" : "AEROSPACE-GRADE TEXTILES"}
                 </h3>
               </div>
 
-              <div className="space-y-6 font-montserrat text-xs text-white/70">
+              <div className={`space-y-6 font-montserrat text-xs ${isDark ? 'text-white/70' : 'text-gray-600'}`}>
                 <div>
-                  <h4 className="font-mono text-[10px] text-white font-bold tracking-widest uppercase mb-2 text-[#0066ff]">
+                  <h4 className={`font-mono text-[10px] font-bold tracking-widest uppercase mb-2 ${isDark ? 'text-[#0066ff]' : 'text-[#0055d4]'}`}>
                     01. THERMAL CONTROL (AERO-KNIT)
                   </h4>
                   <p className="leading-relaxed">
@@ -758,7 +784,7 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                 </div>
 
                 <div>
-                  <h4 className="font-mono text-[10px] text-white font-bold tracking-widest uppercase mb-2 text-[#0066ff]">
+                  <h4 className={`font-mono text-[10px] font-bold tracking-widest uppercase mb-2 ${isDark ? 'text-[#0066ff]' : 'text-[#0055d4]'}`}>
                     02. PROPULSION PLATE (VELOCITY PRO MIDSOLE)
                   </h4>
                   <p className="leading-relaxed">
@@ -769,7 +795,7 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                 </div>
 
                 <div>
-                  <h4 className="font-mono text-[10px] text-white font-bold tracking-widest uppercase mb-2 text-[#0066ff]">
+                  <h4 className={`font-mono text-[10px] font-bold tracking-widest uppercase mb-2 ${isDark ? 'text-[#0066ff]' : 'text-[#0055d4]'}`}>
                     03. DENSITY & ABRASION (TACTICAL FABRICS)
                   </h4>
                   <p className="leading-relaxed">
@@ -780,7 +806,7 @@ export default function NewArrivalsPage({ onOpenQuickView, onAddToCart }: NewArr
                 </div>
               </div>
 
-              <div className="border-t border-white/10 pt-6 mt-8 flex justify-end">
+              <div className={`border-t pt-6 mt-8 flex justify-end ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
                 <button
                   onClick={() => setIsSpecsModalOpen(false)}
                   className="px-6 py-2.5 bg-white text-black font-mono text-[10px] tracking-widest font-black uppercase hover:bg-white/90 transition-colors"

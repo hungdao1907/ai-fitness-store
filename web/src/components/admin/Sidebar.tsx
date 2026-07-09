@@ -30,22 +30,23 @@ interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   userRole?: 'Admin' | 'Staff';
+  language?: 'EN' | 'VN';
 }
 
-export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen, onClose, userRole = 'Admin' }: SidebarProps) {
+export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen, onClose, userRole = 'Admin', language = 'EN' }: SidebarProps) {
   const { isDark } = useTheme();
 
   const menuItems = [
-    { name: 'Dashboard' as TabType, icon: LayoutDashboard },
-    { name: 'Products' as TabType, icon: ShoppingBag },
-    { name: 'Categories' as TabType, icon: FolderTree },
-    { name: 'Orders' as TabType, icon: ShoppingCart },
-    { name: 'Customers' as TabType, icon: Users },
-    { name: 'Inventory' as TabType, icon: Warehouse },
-    { name: 'Promotions' as TabType, icon: Percent },
-    { name: 'Staff' as TabType, icon: BadgeCheck },
-    { name: 'Analytics' as TabType, icon: BarChart3 },
-    { name: 'Settings' as TabType, icon: Settings },
+    { name: 'Dashboard' as TabType, vnName: 'Tổng Quan', icon: LayoutDashboard },
+    { name: 'Products' as TabType, vnName: 'Sản Phẩm', icon: ShoppingBag },
+    { name: 'Categories' as TabType, vnName: 'Danh Mục', icon: FolderTree },
+    { name: 'Orders' as TabType, vnName: 'Đơn Hàng', icon: ShoppingCart },
+    { name: 'Customers' as TabType, vnName: 'Khách Hàng', icon: Users },
+    { name: 'Inventory' as TabType, vnName: 'Tồn Kho', icon: Warehouse },
+    { name: 'Promotions' as TabType, vnName: 'Khuyến Mãi', icon: Percent },
+    { name: 'Staff' as TabType, vnName: 'Nhân Viên', icon: BadgeCheck },
+    { name: 'Analytics' as TabType, vnName: 'Thống Kê', icon: BarChart3 },
+    { name: 'Settings' as TabType, vnName: 'Cài Đặt', icon: Settings },
   ].filter(item => {
     if (userRole === 'Staff') {
       return item.name !== 'Analytics' && item.name !== 'Settings' && item.name !== 'Staff';
@@ -76,7 +77,7 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen, onC
               HENRY FIT
             </h1>
             <p className={`font-montserrat text-[10px] uppercase tracking-widest mt-1 ${isDark ? 'text-zinc-400' : 'text-gray-500'}`}>
-              {userRole === 'Staff' ? 'Staff Control' : 'Admin Control'}
+              {userRole === 'Staff' ? (language === 'EN' ? 'Staff Control' : 'Quản lý Nhân Viên') : (language === 'EN' ? 'Admin Control' : 'Quản lý Hệ Thống')}
             </p>
           </div>
           <button 
@@ -107,7 +108,7 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen, onC
                 `}
               >
                 <Icon size={18} className={isActive ? 'text-[#0066FF]' : ''} />
-                {item.name}
+                {language === 'VN' ? item.vnName : item.name}
               </button>
             );
           })}
@@ -122,7 +123,7 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen, onC
             className={`flex items-center gap-4 px-6 py-3 text-left border-l-4 border-transparent font-montserrat text-[11px] uppercase font-semibold tracking-wider whitespace-nowrap ${isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-900/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
           >
             <Store size={18} />
-            Back to Shop
+            {language === 'EN' ? 'Back to Shop' : 'Về Cửa Hàng'}
           </button>
 
           <button
@@ -133,7 +134,7 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen, onC
             className={`flex items-center gap-4 px-6 py-3 text-left border-l-4 border-transparent font-montserrat text-[11px] uppercase font-semibold tracking-wider whitespace-nowrap ${isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-900/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
           >
             <HelpCircle size={18} />
-            Help Center
+            {language === 'EN' ? 'Help Center' : 'Trợ Giúp'}
           </button>
           
           <button
@@ -141,7 +142,7 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen, onC
             className="flex items-center gap-4 px-6 py-3 text-left border-l-4 border-transparent text-red-500 hover:bg-red-950/20 font-montserrat text-[11px] uppercase font-semibold tracking-wider whitespace-nowrap"
           >
             <LogOut size={18} />
-            Logout
+            {language === 'EN' ? 'Logout' : 'Đăng Xuất'}
           </button>
         </div>
       </nav>

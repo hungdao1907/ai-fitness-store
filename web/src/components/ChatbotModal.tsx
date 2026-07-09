@@ -14,9 +14,11 @@ interface ChatMessage {
 interface ChatbotModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialMessage?: string | null;
+  onInitialMessageSent?: () => void;
 }
 
-export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
+export default function ChatbotModal({ isOpen, onClose, initialMessage, onInitialMessageSent }: ChatbotModalProps) {
   const { language } = useLanguage();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -57,8 +59,19 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
     }
   }, [isOpen]);
 
-  const handleSend = async () => {
-    const query = inputValue.trim();
+  // Handle initial message prop
+  useEffect(() => {
+    if (initialMessage && !isTyping) {
+      setInputValue(initialMessage);
+      setTimeout(() => {
+        handleSend(initialMessage);
+        if (onInitialMessageSent) onInitialMessageSent();
+      }, 300);
+    }
+  }, [initialMessage]);
+
+  const handleSend = async (overrideMsg?: string) => {
+    const query = (typeof overrideMsg === 'string' ? overrideMsg : inputValue).trim();
     if (!query || isTyping) return;
 
     // Clear input
@@ -281,7 +294,7 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
           className="flex-1 bg-[#0c0d10] border border-white/10 px-3 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#0066ff] transition-colors rounded-none"
         />
         <button
-          onClick={handleSend}
+          onClick={() => handleSend()}
           disabled={!inputValue.trim() || isTyping}
           className={`px-3.5 bg-[#0066ff] text-white hover:bg-white hover:text-black transition-all flex items-center justify-center rounded-none cursor-pointer border border-transparent ${
             (!inputValue.trim() || isTyping) ? "opacity-50 cursor-not-allowed" : ""

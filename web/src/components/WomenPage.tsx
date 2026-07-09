@@ -3,6 +3,7 @@ import { Search, ChevronDown, Heart, Plus, Ban, SlidersHorizontal, ArrowRight, E
 import { Product, CartItem } from "../types";
 import { useProducts } from "../context/ProductContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useTheme } from "../context/ThemeContext";
 
 interface WomenPageProps {
   onOpenQuickView: (productId: string) => void;
@@ -14,6 +15,7 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
   const { products: PRODUCTS } = useProducts();
 
   const { language, t } = useLanguage();
+  const { isDark } = useTheme();
 
   // Search, Filter and Sort States
   const [searchQuery, setSearchQuery] = useState("");
@@ -86,7 +88,33 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
 
     // Category Filter
     if (selectedSubCategory !== "ALL") {
-      result = result.filter((p) => p.category?.toUpperCase() === selectedSubCategory.toUpperCase());
+      result = result.filter((p) => {
+        const cat = p.category?.toUpperCase() || "";
+        const name = p.name?.toUpperCase() || "";
+        const desc = p.description?.toUpperCase() || "";
+        const sel = selectedSubCategory.toUpperCase();
+        
+        if (sel === "LEGGINGS") {
+          return cat === "LEGGINGS" || name.includes("LEGGING") || desc.includes("LEGGING");
+        }
+        if (sel === "SPORTS BRAS") {
+          return cat === "SPORTS BRAS" || name.includes("BRA") || desc.includes("BRA");
+        }
+        if (sel === "SETS") {
+          return cat === "SETS" || name.includes("SET") || name.includes("ĐỒ BỘ") || desc.includes("ĐỒ BỘ");
+        }
+        if (sel === "JACKETS") {
+          return cat === "JACKETS" || name.includes("JACKET") || name.includes("ÁO KHOÁC") || desc.includes("ÁO KHOÁC");
+        }
+        if (sel === "SHORTS") {
+          return cat === "SHORTS" || name.includes("SHORT") || name.includes("QUẦN ĐÙI") || desc.includes("QUẦN ĐÙI");
+        }
+        if (sel === "TANKS") {
+          return cat === "TANKS" || name.includes("TANK") || name.includes("BA LỖ") || desc.includes("BA LỖ");
+        }
+
+        return cat === sel;
+      });
     }
 
     // Price Filter
@@ -138,7 +166,7 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
   };
 
   return (
-    <div className="bg-black text-white min-h-screen font-sans selection:bg-[#0066ff] selection:text-white">
+    <div className="theme-bg-primary theme-text-primary min-h-screen font-sans selection:bg-[#0066ff] selection:text-white transition-colors">
       {/* 1. HERO HEADER */}
       <section className="relative h-[65vh] min-h-[500px] w-full flex items-center justify-center overflow-hidden border-b border-zinc-900">
         {/* Background Image Grayscale Overlay */}
@@ -166,9 +194,9 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
       <div className="max-w-[1600px] mx-auto px-6 md:px-16 py-16 flex flex-col lg:flex-row gap-8">
         
         {/* Sidebar Categories (Desktop Only for sub-nav feeling) */}
-        <aside className="hidden lg:flex flex-col w-64 shrink-0 bg-zinc-950/30 border-r border-zinc-900/50 h-max sticky top-32 py-8 pr-6">
+        <aside className={`hidden lg:flex flex-col w-64 shrink-0 border-r h-max sticky top-32 py-8 pr-6 transition-colors ${isDark ? 'bg-zinc-950/30 border-zinc-900/50' : 'bg-gray-50 border-gray-200'}`}>
           <div className="px-4 mb-8 border-l-4 border-[#0066ff] pl-4 ml-1">
-            <h2 className="font-anton text-2xl text-[#b3c5ff] tracking-wider uppercase mb-1">
+            <h2 className={`font-anton text-2xl tracking-wider uppercase mb-1 ${isDark ? 'text-[#b3c5ff]' : 'text-[#0066ff]'}`}>
               HENRY FIT
             </h2>
             <p className="font-montserrat text-[9px] font-extrabold text-zinc-500 uppercase tracking-widest">
@@ -177,59 +205,35 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
           </div>
           
           <nav className="flex flex-col gap-1">
-            <a
-              href="/men"
-              onClick={(e) => handleSidebarClick(e, "/men")}
-              className="flex items-center gap-3.5 px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900/50 transition-colors group uppercase font-mono text-[10px] tracking-widest font-extrabold"
-            >
-              <Mars className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#0066ff] transition-colors" />
-              <span>{language === "vi" ? "Nam" : "Men"}</span>
-            </a>
-            
-            <a
-              href="/women"
-              onClick={(e) => e.preventDefault()}
-              className="flex items-center gap-3.5 px-4 py-3 bg-[#0066ff] text-white font-extrabold transition-transform group uppercase font-mono text-[10px] tracking-widest"
-            >
-              <Venus className="w-3.5 h-3.5 text-white" />
-              <span>{language === "vi" ? "Nữ" : "Women"}</span>
-            </a>
-            
-            <a
-              href="/accessories"
-              onClick={(e) => handleSidebarClick(e, "/accessories")}
-              className="flex items-center gap-3.5 px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900/50 transition-colors group uppercase font-mono text-[10px] tracking-widest font-extrabold"
-            >
-              <Dumbbell className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#0066ff] transition-colors" />
-              <span>{language === "vi" ? "Phụ kiện" : "Accessories"}</span>
-            </a>
-            
-            <a
-              href="/supplements"
-              onClick={(e) => handleSidebarClick(e, "/supplements")}
-              className="flex items-center gap-3.5 px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900/50 transition-colors group uppercase font-mono text-[10px] tracking-widest font-extrabold"
-            >
-              <Pill className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#0066ff] transition-colors" />
-              <span>{language === "vi" ? "Thực phẩm bổ sung" : "Supplements"}</span>
-            </a>
-            
-            <a
-              href="/new-arrivals"
-              onClick={(e) => { e.preventDefault(); onNavigate("/new-arrivals"); }}
-              className="flex items-center gap-3.5 px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900/50 transition-colors group uppercase font-mono text-[10px] tracking-widest font-extrabold"
-            >
-              <Zap className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#0066ff] transition-colors" />
-              <span>{language === "vi" ? "Hàng mới về" : "New Arrivals"}</span>
-            </a>
-            
-            <a
-              href="/best-sellers"
-              onClick={(e) => { e.preventDefault(); onNavigate("/best-sellers"); }}
-              className="flex items-center gap-3.5 px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900/50 transition-colors group uppercase font-mono text-[10px] tracking-widest font-extrabold"
-            >
-              <Star className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#0066ff] transition-colors" />
-              <span>{language === "vi" ? "Bán chạy nhất" : "Best Sellers"}</span>
-            </a>
+            {["ALL", "LEGGINGS", "SPORTS BRAS", "SETS", "JACKETS", "SHORTS", "TANKS"].map((cat) => {
+              let displayName = cat;
+              if (language === "vi") {
+                switch (cat) {
+                  case "ALL": displayName = "TẤT CẢ"; break;
+                  case "LEGGINGS": displayName = "QUẦN LEGGINGS"; break;
+                  case "SPORTS BRAS": displayName = "ÁO BRAS THỂ THAO"; break;
+                  case "SETS": displayName = "ĐỒ BỘ"; break;
+                  case "JACKETS": displayName = "ÁO KHOÁC"; break;
+                  case "SHORTS": displayName = "QUẦN ĐÙI"; break;
+                  case "TANKS": displayName = "ÁO BA LỖ"; break;
+                }
+              }
+
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedSubCategory(cat)}
+                  className={`flex items-center px-4 py-3 transition-colors group uppercase font-mono text-[10px] tracking-widest font-extrabold text-left ${
+                    selectedSubCategory === cat
+                      ? "bg-[#0066ff] text-white"
+                      : isDark ? "text-zinc-400 hover:text-white hover:bg-zinc-900/50" : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <div className={`w-1.5 h-1.5 mr-3 shrink-0 ${selectedSubCategory === cat ? "bg-white" : "bg-transparent group-hover:bg-[#0066ff]/50"}`} />
+                  <span>{displayName}</span>
+                </button>
+              );
+            })}
           </nav>
         </aside>
 
@@ -237,7 +241,7 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
         <div className="flex-grow flex flex-col gap-12">
           
           {/* SEARCH & INTERACTIVE FILTER ROW */}
-          <div className="border border-zinc-900 bg-zinc-950/20 p-4 flex flex-col md:flex-row items-center justify-between gap-4 select-none">
+          <div className={`border p-4 flex flex-col md:flex-row items-center justify-between gap-4 select-none ${isDark ? 'border-zinc-900 bg-zinc-950/20' : 'border-gray-200 bg-white shadow-sm'}`}>
             
             {/* Search Input Box */}
             <div className="relative w-full md:w-80">
@@ -249,50 +253,20 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
                 placeholder={language === "vi" ? "Tìm trang phục nữ..." : "Search women's apparel..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-black border border-zinc-900 pl-10 pr-4 py-2 text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-[#0066ff]/60 font-mono text-[10px] tracking-widest uppercase transition-all rounded-none"
+                className={`w-full border pl-10 pr-4 py-2 font-mono text-[10px] tracking-widest uppercase transition-all rounded-none focus:outline-none focus:border-[#0066ff]/60 ${isDark ? 'bg-black border-zinc-900 text-zinc-300 placeholder-zinc-600' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400'}`}
               />
             </div>
 
             {/* Filter Dropdowns group */}
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
               
-              {/* Dropdown CATEGORY */}
-              <div className="relative">
-                <button
-                  onClick={() => toggleDropdown("category")}
-                  className="flex items-center gap-2 bg-[#121415] hover:bg-zinc-900 border border-zinc-900 px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none"
-                >
-                  <span>
-                    {language === "vi" ? "PHÂN LOẠI" : "CATEGORY"}: {selectedSubCategory}
-                  </span>
-                  <ChevronDown className={`w-3 h-3 text-zinc-400 transition-transform ${activeDropdown === "category" ? "rotate-180" : ""}`} />
-                </button>
-
-                {activeDropdown === "category" && (
-                  <div className="absolute right-0 mt-1 z-30 w-48 bg-zinc-950 border border-zinc-900 shadow-2xl uppercase font-mono text-[10px]">
-                    {["ALL", "LEGGINGS", "SPORTS BRAS", "SETS", "JACKETS", "SHORTS", "TANKS"].map((cat) => (
-                      <button
-                        key={cat}
-                        onClick={() => {
-                          setSelectedSubCategory(cat);
-                          setActiveDropdown(null);
-                        }}
-                        className={`w-full text-left px-4 py-2.5 border-b border-zinc-900 last:border-0 transition-colors ${
-                          selectedSubCategory === cat ? "text-[#0066ff] bg-zinc-900" : "text-zinc-400 hover:text-white"
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {/* Category dropdown removed and moved to sidebar */}
 
               {/* Dropdown PRICE */}
               <div className="relative">
                 <button
                   onClick={() => toggleDropdown("price")}
-                  className="flex items-center gap-2 bg-black hover:bg-zinc-900 border border-zinc-900 px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none"
+                  className={`flex items-center gap-2 border px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none ${isDark ? 'bg-black hover:bg-zinc-900 border-zinc-900' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'}`}
                 >
                   <span>
                     {language === "vi" ? "MỨC GIÁ" : "PRICE"}:{" "}
@@ -306,7 +280,7 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
                 </button>
 
                 {activeDropdown === "price" && (
-                  <div className="absolute right-0 mt-1 z-30 w-48 bg-zinc-950 border border-zinc-900 shadow-2xl uppercase font-mono text-[10px]">
+                  <div className={`absolute right-0 mt-1 z-30 w-48 border shadow-2xl uppercase font-mono text-[10px] ${isDark ? 'bg-zinc-950 border-zinc-900' : 'bg-white border-gray-200'}`}>
                     {[
                       { label: "ALL PRICES", value: "ALL" },
                       { label: "UNDER $100", value: "UNDER_100" },
@@ -318,8 +292,10 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
                           setPriceRange(pr.value);
                           setActiveDropdown(null);
                         }}
-                        className={`w-full text-left px-4 py-2.5 border-b border-zinc-900 last:border-0 transition-colors ${
-                          priceRange === pr.value ? "text-[#0066ff] bg-zinc-900" : "text-zinc-400 hover:text-white"
+                        className={`w-full text-left px-4 py-2.5 border-b last:border-0 transition-colors ${
+                          isDark 
+                            ? (priceRange === pr.value ? "text-[#0066ff] bg-zinc-900 border-zinc-900" : "text-zinc-400 hover:text-white border-zinc-900")
+                            : (priceRange === pr.value ? "text-[#0066ff] bg-gray-50 border-gray-100" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-100")
                         }`}
                       >
                         {pr.label}
@@ -333,7 +309,7 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
               <div className="relative">
                 <button
                   onClick={() => toggleDropdown("sort")}
-                  className="flex items-center gap-2 bg-[#121415] hover:bg-zinc-900 border border-zinc-900 text-zinc-300 px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none"
+                  className={`flex items-center gap-2 border px-4 py-2.5 font-mono text-[10px] tracking-widest font-extrabold uppercase transition-colors rounded-none ${isDark ? 'bg-[#121415] hover:bg-zinc-900 border-zinc-900 text-zinc-300' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'}`}
                 >
                   <SlidersHorizontal className="w-3 h-3 text-[#0066ff]" />
                   <span>{sortBy === "FEATURED" ? "SORT BY: FEATURED" : `SORT: ${sortBy.replace(/_/g, " ")}`}</span>
@@ -341,7 +317,7 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
                 </button>
 
                 {activeDropdown === "sort" && (
-                  <div className="absolute right-0 mt-1 z-30 w-52 bg-zinc-950 border border-zinc-900 shadow-2xl uppercase font-mono text-[10px]">
+                  <div className={`absolute right-0 mt-1 z-30 w-52 border shadow-2xl uppercase font-mono text-[10px] ${isDark ? 'bg-zinc-950 border-zinc-900' : 'bg-white border-gray-200'}`}>
                     {[
                       { label: "FEATURED BOLD", value: "FEATURED" },
                       { label: "NEWEST BATCH", value: "NEWEST" },
@@ -355,8 +331,10 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
                           setSortBy(item.value);
                           setActiveDropdown(null);
                         }}
-                        className={`w-full text-left px-4 py-2.5 border-b border-zinc-900 last:border-0 transition-colors ${
-                          sortBy === item.value ? "text-[#0066ff] bg-zinc-900" : "text-zinc-400 hover:text-white"
+                        className={`w-full text-left px-4 py-2.5 border-b last:border-0 transition-colors ${
+                          isDark
+                            ? (sortBy === item.value ? "text-[#0066ff] bg-zinc-900 border-zinc-900" : "text-zinc-400 hover:text-white border-zinc-900")
+                            : (sortBy === item.value ? "text-[#0066ff] bg-gray-50 border-gray-100" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-100")
                         }`}
                       >
                         {item.label}
@@ -371,7 +349,7 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
 
           {/* Filters results counter */}
           {searchQuery || selectedSubCategory !== "ALL" || priceRange !== "ALL" || sortBy !== "FEATURED" ? (
-            <div className="-mt-8 flex items-center justify-between text-zinc-500 font-mono text-[10px] tracking-widest bg-zinc-950 px-4 py-2 border border-zinc-900 uppercase">
+            <div className={`-mt-8 flex items-center justify-between font-mono text-[10px] tracking-widest px-4 py-2 border uppercase ${isDark ? 'bg-zinc-950 border-zinc-900 text-zinc-500' : 'bg-gray-50 border-gray-200 text-gray-500'}`}>
               <span>
                 {language === "vi"
                   ? `Tìm thấy ${filteredAndSortedProducts.length} trang phục luyện tập`
@@ -394,9 +372,9 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
           {/* PRODUCTS DISPLAY GRID */}
           <div>
             {filteredAndSortedProducts.length === 0 ? (
-              <div className="text-center py-24 bg-[#0e1011] border border-zinc-900 rounded-none">
-                <Ban className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
-                <p className="font-mono text-[11px] tracking-widest text-zinc-400 uppercase font-bold">
+              <div className={`text-center py-24 border rounded-none ${isDark ? 'bg-[#0e1011] border-zinc-900' : 'bg-gray-50 border-gray-200'}`}>
+                <Ban className={`w-12 h-12 mx-auto mb-4 ${isDark ? 'text-zinc-700' : 'text-gray-300'}`} />
+                <p className={`font-mono text-[11px] tracking-widest uppercase font-bold ${isDark ? 'text-zinc-400' : 'text-gray-500'}`}>
                   {language === "vi"
                     ? "Không tìm thấy trang phục rèn luyện phù hợp lựa chọn."
                     : "No matching training apparel found in roster."}
@@ -410,11 +388,13 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
                     <div
                       key={p.id}
                       onClick={() => onOpenQuickView(p.id)}
-                      className="group relative cursor-pointer bg-black/40 hover:bg-black border border-zinc-900 hover:border-[#0066ff]/40 transition-all duration-300 flex flex-col justify-between"
+                      className={`group relative cursor-pointer border transition-all duration-300 flex flex-col justify-between ${
+                        isDark ? 'bg-black/40 hover:bg-black border-zinc-900 hover:border-[#0066ff]/40' : 'bg-white hover:shadow-xl border-gray-100 hover:border-[#0066ff]/30'
+                      }`}
                       style={{ minHeight: "410px" }}
                     >
                       {/* Top Image & badges zone */}
-                      <div className="relative w-full aspect-[3/4] bg-[#101213] overflow-hidden flex items-center justify-center">
+                      <div className={`relative w-full aspect-[3/4] overflow-hidden flex items-center justify-center ${isDark ? 'bg-[#101213]' : 'bg-gray-100'}`}>
                         
                         {/* Grayscale styled image with subtle hover contrast boost */}
                         <img
@@ -426,7 +406,7 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
 
                         {/* Sold out overlay tag */}
                         {p.isSoldOut && (
-                          <div className="absolute top-4 left-4 z-10 bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-[9px] font-bold px-2 py-0.5 tracking-widest uppercase">
+                          <div className={`absolute top-4 left-4 z-10 border font-mono text-[9px] font-bold px-2 py-0.5 tracking-widest uppercase ${isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-400' : 'bg-white border-gray-200 text-gray-500'}`}>
                             {language === "vi" ? "HẾT HÀNG" : "SOLD OUT"}
                           </div>
                         )}
@@ -443,8 +423,10 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
                           {/* Favorite heart icon */}
                           <button
                             onClick={(e) => toggleFavorite(p.id, e)}
-                            className={`p-2 rounded-none border border-zinc-800/80 transition-colors ${
-                              isFav ? "bg-red-950 text-red-500 border-red-900/60" : "bg-black/75 text-zinc-400 hover:text-white"
+                            className={`p-2 rounded-none border transition-colors ${
+                              isFav 
+                                ? (isDark ? "bg-red-950 text-red-500 border-red-900/60" : "bg-red-50 text-red-500 border-red-200") 
+                                : (isDark ? "bg-black/75 text-zinc-400 border-zinc-800/80 hover:text-white" : "bg-white/90 text-gray-400 border-gray-200 hover:text-gray-900")
                             }`}
                             title="Shortlist asset"
                           >
@@ -457,7 +439,7 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
                               e.stopPropagation();
                               onOpenQuickView(p.id);
                             }}
-                            className="p-2 rounded-none bg-black/75 border border-zinc-800/80 text-zinc-400 hover:text-white transition-colors"
+                            className={`p-2 rounded-none border transition-colors ${isDark ? 'bg-black/75 border-zinc-800/80 text-zinc-400 hover:text-white' : 'bg-white/90 border-gray-200 text-gray-500 hover:text-gray-900'}`}
                             title="Examine Specs"
                           >
                             <Eye className="w-3.5 h-3.5" />
@@ -466,7 +448,7 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
                       </div>
 
                       {/* Info & pricing zone */}
-                      <div className="p-6 flex flex-col justify-between flex-grow bg-gradient-to-b from-transparent to-zinc-950/20">
+                      <div className={`p-6 flex flex-col justify-between flex-grow bg-gradient-to-b ${isDark ? 'from-transparent to-zinc-950/20' : 'from-transparent to-gray-50/50'}`}>
                         <div>
                           {/* Category and tag line */}
                           <div className="flex items-center gap-1.5 mb-1 text-zinc-500 font-mono text-[9px] tracking-wider uppercase font-extrabold">
@@ -475,18 +457,18 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
                             <span className="text-[#0066ff]">FIT PROTOCOL</span>
                           </div>
 
-                          <h3 className="font-anton text-xl tracking-wide text-white uppercase group-hover:text-[#0066ff] transition-colors line-clamp-1 mb-2">
+                          <h3 className={`font-anton text-xl tracking-wide uppercase group-hover:text-[#0066ff] transition-colors line-clamp-1 mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                             {p.name}
                           </h3>
 
-                          <p className="font-sans text-xs text-zinc-400 leading-relaxed font-light line-clamp-2">
+                          <p className={`font-sans text-xs leading-relaxed font-light line-clamp-2 ${isDark ? 'text-zinc-400' : 'text-gray-600'}`}>
                             {p.description}
                           </p>
                         </div>
 
                         {/* Footer card row with price and quick add trigger */}
-                        <div className="mt-5 pt-4 border-t border-zinc-900/40 flex items-center justify-between">
-                          <span className="font-anton text-lg tracking-wider text-white">
+                        <div className={`mt-5 pt-4 border-t flex items-center justify-between ${isDark ? 'border-zinc-900/40' : 'border-gray-200'}`}>
+                          <span className={`font-anton text-lg tracking-wider ${isDark ? 'text-white' : 'text-gray-900'}`}>
                             {p.price}
                           </span>
 
@@ -495,8 +477,8 @@ export default function WomenPage({ onOpenQuickView, onAddToCart, onNavigate }: 
                             onClick={(e) => handleQuickAdd(p, e)}
                             className={`flex items-center justify-center gap-1.5 px-4 py-2 border transition-colors font-mono text-[9px] font-extrabold tracking-widest uppercase rounded-none cursor-pointer ${
                               p.isSoldOut
-                                ? "bg-zinc-950 border-zinc-900 text-zinc-600 cursor-not-allowed"
-                                : "bg-transparent hover:bg-white text-white hover:text-black border-white hover:border-white"
+                                ? isDark ? "bg-zinc-950 border-zinc-900 text-zinc-600 cursor-not-allowed" : "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                                : isDark ? "bg-transparent hover:bg-white text-white hover:text-black border-white" : "bg-transparent hover:bg-black text-black hover:text-white border-black"
                             }`}
                           >
                             <Plus className="w-3 h-3" />

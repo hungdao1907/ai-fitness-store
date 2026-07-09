@@ -196,36 +196,46 @@ export default function ProductsView({
     setSelectedProduct(null);
   };
 
-  const handleSimulateUpload = () => {
-    const fitnessImages = [
-      'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=600',
-      'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=600',
-      'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=80&w=600',
-      'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&q=80&w=600',
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=600'
-    ];
-    const randomImg = fitnessImages[Math.floor(Math.random() * fitnessImages.length)];
-    setImage(randomImg);
-    showToast(
-      language === 'EN' ? 'Simulated image upload completed!' : 'Đã tải ảnh lên (giả lập thành công)!',
-      'success'
-    );
-  };
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, isModal: boolean) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const handleSimulateUploadInModal = () => {
-    const fitnessImages = [
-      'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=600',
-      'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=600',
-      'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=80&w=600',
-      'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&q=80&w=600',
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=600'
-    ];
-    const randomImg = fitnessImages[Math.floor(Math.random() * fitnessImages.length)];
-    setModalImage(randomImg);
     showToast(
-      language === 'EN' ? 'Simulated image upload completed!' : 'Đã tải ảnh lên (giả lập thành công)!',
+      language === 'EN' ? 'Uploading image...' : 'Đang tải ảnh lên...',
       'success'
     );
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const imageUrl = data.url;
+        
+        if (isModal) {
+          setModalImage(imageUrl);
+        } else {
+          setImage(imageUrl);
+        }
+        showToast(
+          language === 'EN' ? 'Image uploaded successfully' : 'Tải ảnh lên thành công',
+          'success'
+        );
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast(
+        language === 'EN' ? 'Failed to upload image' : 'Lỗi tải ảnh lên',
+        'info'
+      );
+    }
   };
 
   const filteredProducts = products.filter(p => {
@@ -371,15 +381,22 @@ export default function ProductsView({
                   onChange={(e) => setImage(e.target.value)}
                   className="flex-1 bg-black border border-white/15 px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#0066FF] font-roboto"
                 />
-                <button
-                  type="button"
-                  onClick={handleSimulateUpload}
-                  className="bg-zinc-900 border border-white/10 hover:bg-zinc-800 text-white font-montserrat text-[10px] uppercase font-bold px-3 py-2 flex items-center gap-1 shrink-0"
-                  title={language === 'EN' ? 'Upload Presets' : 'Tải lên (giả lập)'}
-                >
-                  <Upload size={12} />
-                  {language === 'EN' ? 'Simulate Upload' : 'Tải lên'}
-                </button>
+                <div className="relative shrink-0 flex">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => handleImageUpload(e, false)} 
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                  />
+                  <button
+                    type="button"
+                    className="bg-zinc-900 border border-white/10 hover:bg-zinc-800 text-white font-montserrat text-[10px] uppercase font-bold px-3 py-2 flex items-center gap-1"
+                    title={language === 'EN' ? 'Upload from device' : 'Tải ảnh từ thiết bị'}
+                  >
+                    <Upload size={12} />
+                    {language === 'EN' ? 'Upload File' : 'Tải từ máy'}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -831,15 +848,22 @@ export default function ProductsView({
                         onChange={(e) => setModalImage(e.target.value)}
                         className="flex-1 bg-black border border-white/15 px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#0066FF] font-roboto"
                       />
-                      <button
-                        type="button"
-                        onClick={handleSimulateUploadInModal}
-                        className="bg-zinc-900 border border-white/10 hover:bg-zinc-800 text-white font-montserrat text-[10px] uppercase font-bold px-3 py-2 flex items-center gap-1 shrink-0"
-                        title={language === 'EN' ? 'Upload Presets' : 'Tải lên (giả lập)'}
-                      >
-                        <Upload size={12} />
-                        {language === 'EN' ? 'Upload' : 'Tải lên'}
-                      </button>
+                      <div className="relative shrink-0 flex">
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={(e) => handleImageUpload(e, true)} 
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                        />
+                        <button
+                          type="button"
+                          className="bg-zinc-900 border border-white/10 hover:bg-zinc-800 text-white font-montserrat text-[10px] uppercase font-bold px-3 py-2 flex items-center gap-1"
+                          title={language === 'EN' ? 'Upload from device' : 'Tải ảnh từ thiết bị'}
+                        >
+                          <Upload size={12} />
+                          {language === 'EN' ? 'Upload File' : 'Tải từ máy'}
+                        </button>
+                      </div>
                     </div>
                   </div>
 

@@ -3,6 +3,28 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 export const apiRouter = express.Router();
 
+import multer from 'multer';
+import path from 'path';
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(process.cwd(), 'uploads'));
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'image-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage });
+
+apiRouter.post('/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No image uploaded' });
+  }
+  const fileUrl = `/uploads/${req.file.filename}`;
+  res.json({ url: fileUrl });
+});
+
 /**
  * @openapi
  * /api/products:

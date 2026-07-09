@@ -8,6 +8,7 @@ import { Eye, ShieldCheck, Zap, Award } from "lucide-react";
 import { Product } from "../types";
 import { useProducts } from "../context/ProductContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useTheme } from "../context/ThemeContext";
 
 interface BestSellersProps {
   onOpenQuickView: (productId: string) => void;
@@ -15,8 +16,8 @@ interface BestSellersProps {
 
 export default function BestSellers({ onOpenQuickView }: BestSellersProps) {
   const { products: PRODUCTS } = useProducts();
-
   const { language, t } = useLanguage();
+  const { isDark } = useTheme();
 
   // Map and localize products list
   const localizedProducts = PRODUCTS.map((prod) => {
@@ -28,10 +29,39 @@ export default function BestSellers({ onOpenQuickView }: BestSellersProps) {
     };
   });
 
+  const sortAndLimit = (items: any[]) => {
+    return [...items]
+      .sort((a, b) => {
+        if (a.status === "Low Stock" && b.status !== "Low Stock") return -1;
+        if (a.status !== "Low Stock" && b.status === "Low Stock") return 1;
+        return 0;
+      })
+      .slice(0, 3);
+  };
+
   // Category specific filterings matching smooth scroll targets
-  const menApparel = localizedProducts.filter((p) => p.id === "oversized-tee" || p.id === "compression-shirt");
-  const womenApparel = localizedProducts.filter((p) => p.id === "oversized-tee" || p.id === "compression-shirt");
-  const liftingAccessories = localizedProducts.filter((p) => p.id === "lifting-belt");
+  const menApparel = sortAndLimit(localizedProducts.filter((p) => {
+    const c = p.category?.toUpperCase() || "";
+    return c === "NAM" || c === "MEN";
+  }));
+  
+  const womenApparel = sortAndLimit(localizedProducts.filter((p) => {
+    const c = p.category?.toUpperCase() || "";
+    return c === "NỮ" || c === "WOMEN";
+  }));
+  
+  const liftingAccessories = sortAndLimit(localizedProducts.filter((p) => {
+    const c = p.category?.toUpperCase() || "";
+    return c === "PHỤ KIỆN" || c === "ACCESSORIES";
+  }));
+
+  const supplements = sortAndLimit(localizedProducts.filter((p) => {
+    const c = p.category?.toUpperCase() || "";
+    return c === "THỰC PHẨM CHỨC NĂNG" || c === "SUPPLEMENTS";
+  }));
+
+  const bestSellersList = sortAndLimit(localizedProducts);
+  const newArrivalsList = sortAndLimit([...localizedProducts].reverse());
 
   const renderProductCard = (prod: any, idx: number) => (
     <motion.div
@@ -40,10 +70,14 @@ export default function BestSellers({ onOpenQuickView }: BestSellersProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay: idx * 0.1 }}
-      className="theme-bg-secondary group flex flex-col border border-[#424656]/15 hover:theme-border transition-all duration-300 h-full"
+      className={`group flex flex-col border transition-all duration-300 h-full ${
+        isDark ? 'bg-[#0c0d0f] border-[#424656]/15 hover:border-[#0066ff]' : 'bg-white border-gray-200 hover:border-[#0066ff] shadow-sm'
+      }`}
     >
       {/* Image Container with zoom */}
-      <div className="relative w-full h-80 theme-bg-primary overflow-hidden p-6 flex items-center justify-center border-b border-[#424656]/15 select-none">
+      <div className={`relative w-full h-80 overflow-hidden p-6 flex items-center justify-center border-b select-none ${
+        isDark ? 'bg-black border-[#424656]/15' : 'bg-gray-100 border-gray-100'
+      }`}>
         <img
           src={prod.image}
           alt={prod.name}
@@ -58,26 +92,28 @@ export default function BestSellers({ onOpenQuickView }: BestSellersProps) {
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60 pointer-events-none" />
+        <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-black/20' : 'from-black/5'} via-transparent to-transparent opacity-60 pointer-events-none`} />
       </div>
 
       {/* Product Details info */}
       <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
         <div className="mb-6">
-          <h3 className="font-montserrat text-base md:text-lg font-extrabold theme-text-primary uppercase tracking-wider mb-2 group-hover:text-[#b3c5ff] transition-colors line-clamp-1">
+          <h3 className={`font-montserrat text-base md:text-lg font-extrabold uppercase tracking-wider mb-2 group-hover:text-[#0066ff] transition-colors line-clamp-1 ${isDark ? 'text-white hover:text-[#b3c5ff]' : 'text-gray-900'}`}>
             {prod.name}
           </h3>
-          <p className="font-mono text-sm font-extrabold text-[#c2c6d8] tracking-widest mb-3">
+          <p className={`font-mono text-sm font-extrabold tracking-widest mb-3 ${isDark ? 'text-[#c2c6d8]' : 'text-gray-900'}`}>
             {prod.price}
           </p>
-          <p className="font-sans text-xs text-zinc-400 line-clamp-2">
+          <p className={`font-sans text-xs line-clamp-2 ${isDark ? 'text-zinc-400' : 'text-gray-500'}`}>
             {prod.description}
           </p>
         </div>
 
         <button
           onClick={() => onOpenQuickView(prod.id)}
-          className="w-full bg-transparent theme-text-primary border-2 theme-border hover:theme-bg-primary hover:theme-text-primary font-montserrat text-xs font-bold tracking-widest py-3.5 uppercase transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+          className={`w-full font-montserrat text-xs font-bold tracking-widest py-3.5 uppercase transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer border-2 ${
+            isDark ? 'bg-transparent text-white border-white/20 hover:bg-white hover:text-black' : 'bg-transparent text-gray-900 border-gray-300 hover:bg-gray-900 hover:text-white'
+          }`}
         >
           <Eye className="w-4 h-4" />
           {t.bestSellers.quickView}
@@ -87,13 +123,13 @@ export default function BestSellers({ onOpenQuickView }: BestSellersProps) {
   );
 
   return (
-    <section className="theme-bg-primary divide-y divide-[#424656]/15 transition-colors">
+    <section className={`divide-y transition-colors ${isDark ? 'bg-black divide-[#424656]/15' : 'bg-gray-50 divide-gray-200'}`}>
       
       {/* 1. BEST SELLERS SECTION */}
       <div id="best-sellers" className="py-20 md:py-24 px-6 md:px-16 max-w-7xl mx-auto scroll-mt-20">
-        <div className="flex justify-between items-end mb-12 border-b border-[#424656]/20 pb-5">
+        <div className={`flex justify-between items-end mb-12 border-b pb-5 ${isDark ? 'border-[#424656]/20' : 'border-gray-200'}`}>
           <div>
-            <h2 className="font-montserrat text-2xl md:text-3xl font-extrabold text-white tracking-widest uppercase mb-1">
+            <h2 className={`font-montserrat text-2xl md:text-3xl font-extrabold tracking-widest uppercase mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
               {t.bestSellers.title}
             </h2>
             <p className="font-mono text-[10px] text-[#0066ff] tracking-widest uppercase font-bold">
@@ -109,14 +145,14 @@ export default function BestSellers({ onOpenQuickView }: BestSellersProps) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {localizedProducts.map((prod, idx) => renderProductCard(prod, idx))}
+          {bestSellersList.map((prod, idx) => renderProductCard(prod, idx))}
         </div>
       </div>
 
       {/* 2. MEN APP STYLE DEPT SECTION */}
       <div id="men" className="py-20 md:py-24 px-6 md:px-16 max-w-7xl mx-auto scroll-mt-20">
-        <div className="mb-12 border-b border-[#424656]/20 pb-5">
-          <h2 className="font-montserrat text-2xl md:text-3xl font-extrabold text-white tracking-widest uppercase mb-1">
+        <div className={`mb-12 border-b pb-5 ${isDark ? 'border-[#424656]/20' : 'border-gray-200'}`}>
+          <h2 className={`font-montserrat text-2xl md:text-3xl font-extrabold tracking-widest uppercase mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             {language === "vi" ? "ĐỒ TẬP NAM" : "MEN'S APPAREL"}
           </h2>
           <p className="font-mono text-[10px] text-[#0066ff] tracking-widest uppercase font-bold">
@@ -131,8 +167,8 @@ export default function BestSellers({ onOpenQuickView }: BestSellersProps) {
 
       {/* 3. WOMEN APP STYLE DEPT SECTION */}
       <div id="women" className="py-20 md:py-24 px-6 md:px-16 max-w-7xl mx-auto scroll-mt-20">
-        <div className="mb-12 border-b border-[#424656]/20 pb-5">
-          <h2 className="font-montserrat text-2xl md:text-3xl font-extrabold text-white tracking-widest uppercase mb-1">
+        <div className={`mb-12 border-b pb-5 ${isDark ? 'border-[#424656]/20' : 'border-gray-200'}`}>
+          <h2 className={`font-montserrat text-2xl md:text-3xl font-extrabold tracking-widest uppercase mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             {language === "vi" ? "ĐỒ TẬP NỮ" : "WOMEN'S APPAREL"}
           </h2>
           <p className="font-mono text-[10px] text-[#0066ff] tracking-widest uppercase font-bold">
@@ -147,8 +183,8 @@ export default function BestSellers({ onOpenQuickView }: BestSellersProps) {
 
       {/* 4. ACCESSORIES DEPT SECTION */}
       <div id="accessories" className="py-20 md:py-24 px-6 md:px-16 max-w-7xl mx-auto scroll-mt-20">
-        <div className="mb-12 border-b border-[#424656]/20 pb-5">
-          <h2 className="font-montserrat text-2xl md:text-3xl font-extrabold text-white tracking-widest uppercase mb-1">
+        <div className={`mb-12 border-b pb-5 ${isDark ? 'border-[#424656]/20' : 'border-gray-200'}`}>
+          <h2 className={`font-montserrat text-2xl md:text-3xl font-extrabold tracking-widest uppercase mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             {language === "vi" ? "PHỤ KIỆN LỰC" : "LIFTING ACCESSORIES"}
           </h2>
           <p className="font-mono text-[10px] text-[#0066ff] tracking-widest uppercase font-bold">
@@ -163,8 +199,8 @@ export default function BestSellers({ onOpenQuickView }: BestSellersProps) {
 
       {/* 5. SUPPLEMENTS DEPT SECTION */}
       <div id="supplements" className="py-20 md:py-24 px-6 md:px-16 max-w-7xl mx-auto scroll-mt-20">
-        <div className="mb-12 border-b border-[#424656]/20 pb-5">
-          <h2 className="font-montserrat text-2xl md:text-3xl font-extrabold text-white tracking-widest uppercase mb-1">
+        <div className={`mb-12 border-b pb-5 ${isDark ? 'border-[#424656]/20' : 'border-gray-200'}`}>
+          <h2 className={`font-montserrat text-2xl md:text-3xl font-extrabold tracking-widest uppercase mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             {language === "vi" ? "THỰC PHẨM BỔ SUNG" : "SUPPLEMENTS"}
           </h2>
           <p className="font-mono text-[10px] text-[#0066ff] tracking-widest uppercase font-bold">
@@ -172,30 +208,37 @@ export default function BestSellers({ onOpenQuickView }: BestSellersProps) {
           </p>
         </div>
 
-        {/* Aesthetic Placeholder warning that there are no catalog items yet, but allows contacting or using the chatbot */}
-        <div className="theme-bg-secondary p-10 md:p-16 text-center border border-[#424656]/20 flex flex-col items-center max-w-3xl mx-auto">
-          <Award className="w-12 h-12 text-[#0066ff] mb-4" />
-          <h3 className="font-montserrat text-sm font-black theme-text-primary tracking-widest uppercase mb-4">
-            {language === "vi" ? "ĐANG THỬ NGHIỆM CHẤT LƯỢNG LÂM SÀNG" : "CLINICAL REGISTRY PENDING CALIBRATION"}
-          </h3>
-          <p className="font-sans text-xs md:text-sm text-[#c2c6d8] leading-relaxed mb-6">
-            {language === "vi"
-              ? "Công thức protein tinh khiết và phục hồi tế bào đang được thử nghiệm khép kín để đảm bảo tiêu chuẩn cao nhất. Tư vấn trực ban AI hoặc Chuyên gia để đăng ký sớm."
-              : "Our pharmaceutical-grade microfiltration and recovery compounds are undergoing regulatory lab checks. Use our AI specialist to reserve slots in preview batches."}
-          </p>
-          <a
-            href="#advice"
-            className="bg-[#0066ff] text-white hover:bg-white hover:text-black transition-all px-8 py-3.5 font-montserrat text-xs font-bold tracking-widest uppercase"
-          >
-            {language === "vi" ? "TƯ VẤN THIẾT BIÊN AI" : "CONSULT SYSTEM AGENT"}
-          </a>
-        </div>
+        {supplements.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {supplements.map((prod, idx) => renderProductCard(prod, idx))}
+          </div>
+        ) : (
+          <div className={`p-10 md:p-16 text-center border flex flex-col items-center max-w-3xl mx-auto ${
+            isDark ? 'bg-[#0c0d0f] border-[#424656]/20' : 'bg-white border-gray-200 shadow-sm'
+          }`}>
+            <Award className="w-12 h-12 text-[#0066ff] mb-4" />
+            <h3 className={`font-montserrat text-sm font-black tracking-widest uppercase mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              {language === "vi" ? "ĐANG THỬ NGHIỆM CHẤT LƯỢNG LÂM SÀNG" : "CLINICAL REGISTRY PENDING CALIBRATION"}
+            </h3>
+            <p className={`font-sans text-xs md:text-sm leading-relaxed mb-6 ${isDark ? 'text-[#c2c6d8]' : 'text-gray-500'}`}>
+              {language === "vi"
+                ? "Công thức protein tinh khiết và phục hồi tế bào đang được thử nghiệm khép kín để đảm bảo tiêu chuẩn cao nhất. Tư vấn trực ban AI hoặc Chuyên gia để đăng ký sớm."
+                : "Our pharmaceutical-grade microfiltration and recovery compounds are undergoing regulatory lab checks. Use our AI specialist to reserve slots in preview batches."}
+            </p>
+            <a
+              href="#advice"
+              className="bg-[#0066ff] text-white hover:bg-white hover:text-black transition-all px-8 py-3.5 font-montserrat text-xs font-bold tracking-widest uppercase"
+            >
+              {language === "vi" ? "TƯ VẤN THIẾT BIÊN AI" : "CONSULT SYSTEM AGENT"}
+            </a>
+          </div>
+        )}
       </div>
 
       {/* 6. NEW ARRIVALS DEPT SECTION */}
       <div id="new-arrivals" className="py-20 md:py-24 px-6 md:px-16 max-w-7xl mx-auto scroll-mt-20">
-        <div className="mb-12 border-b border-[#424656]/20 pb-5">
-          <h2 className="font-montserrat text-2xl md:text-3xl font-extrabold text-white tracking-widest uppercase mb-1">
+        <div className={`mb-12 border-b pb-5 ${isDark ? 'border-[#424656]/20' : 'border-gray-200'}`}>
+          <h2 className={`font-montserrat text-2xl md:text-3xl font-extrabold tracking-widest uppercase mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             {language === "vi" ? "HÀNG MỚI VÀ ĐỘC QUYỀN" : "NEW ARRIVALS"}
           </h2>
           <p className="font-mono text-[10px] text-[#0066ff] tracking-widest uppercase font-bold">
@@ -204,7 +247,7 @@ export default function BestSellers({ onOpenQuickView }: BestSellersProps) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {localizedProducts.map((prod, idx) => renderProductCard(prod, idx))}
+          {newArrivalsList.map((prod, idx) => renderProductCard(prod, idx))}
         </div>
       </div>
 

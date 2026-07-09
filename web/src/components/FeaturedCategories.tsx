@@ -19,30 +19,30 @@ export default function FeaturedCategories({ onNavigate }: FeaturedCategoriesPro
     {
       title: t.categories.apparel,
       description: t.categories.apparelDesc,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBOq91TJ3BmTt7yEyN2liR863bwjXrC1gWVcE6wR97yrhpAbzInR2Myf6p343bhvvSvvsin6dWMIQEDAeoTAU_jDxjUIyvbNEX9uga1YXp_VRg-KsZel2x8rafWDWylvkQCUPimhQ7DU5M5ZY2jYMk7NAm5Ga3nyZxSi501zqQSASOUViGYvdD8o36ePO6w3SbLY5s9i0evN20fik8OzLHb32jCCyMyPXjlhbbPivEaUbiMN8Omv_4ZIQ4k32PxEJ_B5TkWExy1887S",
+      image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=1000",
       gridClass: "col-span-1 md:col-span-2 lg:col-span-2 row-span-2 min-h-[320px] md:min-h-full",
       path: "/men"
     },
     {
       title: t.categories.supplements,
       description: t.categories.supplementsDesc,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBpbjM1zvis8BE7sJnapZVPmw02WeW6IC6Sim-ba7iVcaol2FEVb6zIt46iLGVTL959qt1E9kNnORmsnhqROt9Ul7N0SSbh0qNGllj5eSsoqk5D-dp_HbordA-pFRhbTy_fC0bhUf0CPSewWFuGENMVjY6Ady0X-tLyf8x3jhV-4u5X2Q-2O9ZmCMgEXjThaHvkwGH9zTJAt4v4XIP2UI_osKgPhcgPuzdAbImY2I_ySOmDGFgIVnzO92_Wbrz5jRMWJmQWBAB6NVwY",
+      image: "https://images.unsplash.com/photo-1593095948071-474c5cc2989d?auto=format&fit=crop&q=80&w=1000",
       gridClass: "col-span-1 h-[288px] lg:h-auto",
       path: "/supplements"
     },
     {
       title: t.categories.liftingAccessories,
       description: t.categories.accessoriesDesc,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCmNk7Okdd5ctfl3froAOoF2fM71F9EoWX-43RyPM7Gq2RYKhbtE79lwe_d-0SzMDSvdHknUjDG8DQckGdvwLNptFqNdU54k8qfETYPB7Sk8B_qzkOC9udgim7QBp1KhlOdN5nlgoWzLphGJOrBiZVgeHSpG3vJBdGG6iMMxPqN5rQrBCa8MmCFBj_BqRq0wa5WRIDIrHkzDQztlBDAzLH-pc0eu9LLd7oo12lP4cNGzYd0NijHaeP2i3QhghGwSx5hMzqNTGJz6U8-",
+      image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=1000",
       gridClass: "col-span-1 h-[288px] lg:h-auto",
-      path: "/best-sellers"
+      path: "/accessories"
     },
     {
       title: t.categories.newArrivals,
       description: t.categories.newArrivalsDesc,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCiV8MPijVn5arX1fqEoiEm3dkIc_F6qjRT1eCEVn0AXJnnseW2IshxRFJ4MjHtuw6MvVhikxBUEg2v7IGhbI0RiX7UtRJj4xIs2clIVH-QfY5pt_ZZR41exfsN_USh8O-96DhL78o83h1oInfwlbnNEzuWW3wst4sfUmPPhCID1yf4lpRlYKB463A7k5t8ZcmY6WZz6-SCoTf56-GLRoivqc2gpEh0L-RLezlhTyyW90xA9vmdh7FKtMTpbWHXqCqj6Kp2lJ5VtVK_",
+      image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=1000",
       gridClass: "col-span-1 md:col-span-2 lg:col-span-2 h-[288px] lg:h-auto",
-      path: "/men"
+      path: "/new-arrivals"
     },
   ];
 

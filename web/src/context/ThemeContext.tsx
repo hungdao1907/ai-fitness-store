@@ -14,7 +14,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem("henry_fit_theme");
     if (saved === "light" || saved === "dark") return saved;
-    return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    return "light"; // default to light theme as requested
   });
 
   useEffect(() => {

@@ -23,16 +23,16 @@ export default function ChatbotModal({ isOpen, onClose, initialMessage, onInitia
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Initialize with the welcome message
   useEffect(() => {
-    const welcomeMsg = language === "vi" 
+    const welcomeMsg = language === "vi"
       ? "Xin chào! Tôi là Henry Fit AI. Tôi có thể giúp gì cho bạn hôm nay?"
       : "Hello! I’m Henry Fit AI. How can I help you today?";
-    
+
     setMessages([
       {
         id: "welcome",
@@ -99,18 +99,18 @@ export default function ChatbotModal({ isOpen, onClose, initialMessage, onInitia
         }),
       });
       const data = await response.json();
-      
+
       // Extract response from common n8n output fields
       let botResponse = "";
-      
+
       if (Object.keys(data).length === 0) {
-        botResponse = language === "vi" 
-          ? "Đã gửi request tới n8n thành công (nhưng n8n trả về phản hồi rỗng)." 
+        botResponse = language === "vi"
+          ? "Đã gửi request tới n8n thành công (nhưng n8n trả về phản hồi rỗng)."
           : "Request sent to n8n successfully (but n8n returned an empty response).";
       } else {
         botResponse = data.reply || data.output || data.response || data.message || data.text || JSON.stringify(data, null, 2);
       }
-      
+
       const botMsg: ChatMessage = {
         id: `bot-${Date.now()}`,
         role: "assistant",
@@ -165,7 +165,7 @@ export default function ChatbotModal({ isOpen, onClose, initialMessage, onInitia
             </p>
           </div>
         </div>
-        
+
         <button
           onClick={onClose}
           className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer rounded-none"
@@ -191,64 +191,137 @@ export default function ChatbotModal({ isOpen, onClose, initialMessage, onInitia
               )}
 
               <div
-                className={`max-w-[85%] p-3 text-xs leading-relaxed font-sans ${
-                  isBot
+                className={`max-w-[85%] p-3 text-xs leading-relaxed font-sans ${isBot
                     ? "bg-[#12141a] text-zinc-300 border border-white/5 rounded-none"
                     : "bg-[#0066ff] text-white rounded-none"
-                }`}
+                  }`}
               >
                 {msg.content}
-                
+
                 {/* Rich UI Rendering from n8n payload */}
+                {/* Rich UI Rendering */}
+
                 {isBot && msg.payload && (
+
                   <div className="mt-3 flex flex-col gap-3">
-                    {msg.payload.display === 'gallery' && msg.payload.products && (
-                      <div className="grid grid-cols-2 gap-2">
-                        {msg.payload.products.slice(0, 4).map((p: any) => (
-                          <div key={p.id} className="bg-black border border-white/10 p-2 flex flex-col gap-1">
-                            {msg.payload.ui?.showImage && (
-                              <div className="w-full h-24 bg-zinc-900 mb-1 overflow-hidden">
-                                <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
+
+                    {/* Gallery */}
+
+                    {msg.payload.responseType === "gallery" &&
+                      msg.payload.products?.length > 0 && (
+
+                        <div className="grid grid-cols-2 gap-3">
+
+                          {msg.payload.products.map((p: any) => (
+
+                            <div
+                              key={p.id}
+                              className="bg-black border border-white/10 overflow-hidden"
+                            >
+
+                              {p.image_url && (
+
+                                <img
+                                  src={p.image_url}
+                                  alt={p.name}
+                                  className="w-full h-28 object-cover"
+                                />
+
+                              )}
+
+                              <div className="p-2">
+
+                                <div className="text-white text-[11px] font-semibold line-clamp-2">
+                                  {p.name}
+                                </div>
+
+                                <div className="text-[#0066ff] text-[11px] mt-1">
+
+                                  {Number(p.price).toLocaleString("vi-VN")}đ
+
+                                </div>
+
+                                <div className="text-[9px] text-zinc-500 mt-1">
+
+                                  {p.in_stock ? "Còn hàng" : "Hết hàng"}
+
+                                </div>
+
                               </div>
-                            )}
-                            <div className="font-bold text-[10px] text-white line-clamp-2">{p.name}</div>
-                            {msg.payload.ui?.showPrice && <div className="text-[#0066ff] text-[10px]">${p.price}</div>}
-                            {msg.payload.ui?.showStock && (
-                              <div className="text-zinc-500 text-[9px]">{p.in_stock ? 'In Stock' : 'Out of Stock'}</div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
 
-                    {msg.payload.display === 'single_product' && msg.payload.product && (
-                      <div className="bg-black border border-white/10 p-3 flex gap-3 items-center">
-                        {msg.payload.ui?.showImage && (
-                          <div className="w-16 h-16 bg-zinc-900 shrink-0">
-                            <img src={msg.payload.product.image_url} alt={msg.payload.product.name} className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                        <div className="flex flex-col">
-                          <div className="font-bold text-xs text-white">{msg.payload.product.name}</div>
-                          {msg.payload.ui?.showPrice && <div className="text-[#0066ff] text-[10px] mt-1">${msg.payload.product.price}</div>}
+                            </div>
+
+                          ))}
+
                         </div>
+
+                      )}
+
+                    {/* Single Product */}
+
+                    {msg.payload.responseType === "single" &&
+                      msg.payload.products?.length > 0 && (
+
+                        <div className="bg-black border border-white/10 flex gap-3 p-3">
+
+                          <img
+                            src={msg.payload.products[0].image_url}
+                            alt={msg.payload.products[0].name}
+                            className="w-20 h-20 object-cover"
+                          />
+
+                          <div>
+
+                            <div className="font-bold text-white">
+
+                              {msg.payload.products[0].name}
+
+                            </div>
+
+                            <div className="text-[#0066ff] mt-1">
+
+                              {Number(msg.payload.products[0].price).toLocaleString("vi-VN")}đ
+
+                            </div>
+
+                            <div className="text-zinc-500 text-xs mt-1">
+
+                              {msg.payload.products[0].description}
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      )}
+
+                    {/* Suggestions */}
+
+                    {msg.payload.suggestions?.length > 0 && (
+
+                      <div className="flex flex-wrap gap-2">
+
+                        {msg.payload.suggestions.map((s: string, index: number) => (
+
+                          <button
+                            key={index}
+                            onClick={() => setInputValue(s)}
+                            className="border border-[#0066ff] text-[#0066ff] text-[10px] px-2 py-1 hover:bg-[#0066ff] hover:text-white transition"
+                          >
+
+                            {s}
+
+                          </button>
+
+                        ))}
+
                       </div>
+
                     )}
 
-                    {msg.payload.suggestions && msg.payload.suggestions.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-1">
-                        {msg.payload.suggestions.map((s: string, i: number) => (
-                          <button 
-                            key={i} 
-                            onClick={() => setInputValue(s)}
-                            className="text-[9px] border border-[#0066ff]/40 px-2 py-1 text-[#0066ff] hover:bg-[#0066ff]/20 transition-colors text-left"
-                          >
-                            {s}
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
+
                 )}
 
                 <div className={`text-[8px] font-mono mt-1.5 text-right ${isBot ? "text-zinc-500" : "text-white/60"}`}>
@@ -296,9 +369,8 @@ export default function ChatbotModal({ isOpen, onClose, initialMessage, onInitia
         <button
           onClick={() => handleSend()}
           disabled={!inputValue.trim() || isTyping}
-          className={`px-3.5 bg-[#0066ff] text-white hover:bg-white hover:text-black transition-all flex items-center justify-center rounded-none cursor-pointer border border-transparent ${
-            (!inputValue.trim() || isTyping) ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`px-3.5 bg-[#0066ff] text-white hover:bg-white hover:text-black transition-all flex items-center justify-center rounded-none cursor-pointer border border-transparent ${(!inputValue.trim() || isTyping) ? "opacity-50 cursor-not-allowed" : ""
+            }`}
         >
           <Send size={12} />
         </button>

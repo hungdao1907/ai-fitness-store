@@ -163,7 +163,7 @@ app.post("/api/chat", async (req, res) => {
   const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
   const chatInput = lastUserMessage ? lastUserMessage.content : "";
 
-  const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL || "https://vancouver-opens-outer-burlington.trycloudflare.com/webhook/d4b76ec9-f9fc-475d-b835-b4d479d35849";
+  const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL || "http://localhost:5678/webhook/d4b76ec9-f9fc-475d-b835-b4d479d35849";
 
   try {
     const response = await fetch(n8nWebhookUrl, {
